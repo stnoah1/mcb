@@ -7,19 +7,23 @@ from config import host, ssh_username, ssh_private_key, localhost, ssh_password,
 
 class DBConn:
     def __init__(self):
-        self.server = SSHTunnelForwarder(
-            (host, 22),
-            ssh_username=ssh_username,
-            ssh_private_key=ssh_private_key,
-            remote_bind_address=(localhost, 5432),
-            ssh_password=ssh_password,
-        )
-        self.server.start()
+        self.port = 5432
+
+        if config.ssh_tunel:
+            self.server = SSHTunnelForwarder(
+                (host, 22),
+                ssh_username=ssh_username,
+                ssh_private_key=ssh_private_key,
+                remote_bind_address=(localhost, self.port),
+                ssh_password=ssh_password,
+            )
+            self.server.start()
+            self.port = self.server.local_bind_port
 
     def __enter__(self):
         self.server.__enter__()
         self.engine = create_engine(
-            f'postgresql://{user}:{password}@{localhost}:{self.server.local_bind_port}/{database}')
+            f'postgresql://{user}:{password}@{localhost}:{self.port}/{database}')
         return self
 
     def query(self, q):

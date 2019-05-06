@@ -1,16 +1,16 @@
 import os
-import pandas as pd
 import shutil
 import zipfile
-import trimesh
 from os.path import join
 
+import db
+import pandas as pd
 import requests
+import trimesh
 import wget
+from config import scrap_path
 from tqdm import tqdm
 from trimesh.exchange.export import export_mesh
-
-import db
 from utils import make_dir
 
 grapcad_url = 'https://grabcad.com'
@@ -144,7 +144,7 @@ def scrap(keyword, limit=0, softwares=None):
     if softwares is None:
         softwares = ['obj', 'stl']
 
-    output_dir = f'scrap/{keyword}/'
+    output_dir = f'{scrap_path}/{keyword}/'
     make_dir(output_dir)
 
     # search models
