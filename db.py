@@ -2,14 +2,14 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sshtunnel import SSHTunnelForwarder
 
-from config import host, ssh_username, ssh_private_key, localhost, ssh_password, user, password, database
+from config import host, ssh_username, ssh_private_key, localhost, ssh_password, user, password, database, ssh_tunnel
 
 
 class DBConn:
     def __init__(self):
         self.port = 5432
 
-        if config.ssh_tunel:
+        if ssh_tunnel:
             self.server = SSHTunnelForwarder(
                 (host, 22),
                 ssh_username=ssh_username,
@@ -21,7 +21,8 @@ class DBConn:
             self.port = self.server.local_bind_port
 
     def __enter__(self):
-        self.server.__enter__()
+        if ssh_tunnel:
+            self.server.__enter__()
         self.engine = create_engine(
             f'postgresql://{user}:{password}@{localhost}:{self.port}/{database}')
         return self
@@ -44,7 +45,8 @@ class DBConn:
 
     def __exit__(self, type, value, traceback):
         self.engine.dispose()
-        self.server.__exit__()
+        if ssh_tunnel:
+            self.server.__exit__()
 
 
 def query(q):

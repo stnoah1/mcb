@@ -1,6 +1,8 @@
+import logging
 import os
 import shutil
 import zipfile
+from datetime import datetime
 from os.path import join
 
 import db
@@ -74,9 +76,10 @@ def download_zipfile(cadid, output_dir):
 def unzip_file(zip_file, output_dir=None):
     if not output_dir:
         output_dir = zip_file.replace('.zip', '')
-    zip_ref = zipfile.ZipFile(zip_file, 'r')
-    zip_ref.extractall(output_dir)
-    zip_ref.close()
+    # zip_ref = zipfile.ZipFile(zip_file, 'r')
+    # zip_ref.extractall()
+    # zip_ref.close()
+    os.system(f'unzip -o {zip_file} -d {output_dir}')
     os.remove(zip_file)
     return output_dir
 
@@ -137,14 +140,16 @@ def insert_grabcad_file(cadid, filepath):
 
 
 def is_model(model_name):
-    return not db.query(f"SELECT * from grabcad_model WHERE model_name='{model_name}'").empty
+    return not db.query(f"SELECT * from grabcad_files WHERE model_name='{model_name}'").empty
 
 
 def scrap(keyword, limit=0, softwares=None):
+    keyword = keyword.lower()
+    print(keyword)
     if softwares is None:
         softwares = ['obj', 'stl']
 
-    output_dir = f'{scrap_path}/{keyword}/'
+    output_dir = f'{scrap_path}/{keyword}'
     make_dir(output_dir)
 
     # search models
@@ -163,7 +168,7 @@ def scrap(keyword, limit=0, softwares=None):
         if keyword not in model_name.lower():
             continue
 
-        # check_db
+        # check db
         if is_model(model_name):
             insert_search_result(model_name, search_id)
             continue
@@ -201,4 +206,14 @@ def scrap(keyword, limit=0, softwares=None):
 
 
 if __name__ == "__main__":
-    scrap('wheel', softwares=['obj', 'stl'])
+    keywords = db.query('SELECT name FROM labels where use=TRUE')
+    logging.basicConfig(filename=f'{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.DEBUG)
+
+    for idx, keyword in keywords.iterrows():
+        try:
+            scrap(keyword=keyword['name'], softwares=['obj', 'stl'])
+        except Exception as e:
+            logging.debug(f'[{keyword}]:{e}')
+            continue
+    # scrap(keyword='bolts', softwares=['obj', 'stl'])
+    # unzip_file('/mnt/4TWD/grabCAD/bolts/cluster-of-bolts.zip')
