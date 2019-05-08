@@ -1,18 +1,17 @@
 import logging
 import os
 import shutil
-import zipfile
 from datetime import datetime
 from os.path import join
 
-import db
-import pandas as pd
 import requests
 import trimesh
 import wget
-from config import scrap_path
 from tqdm import tqdm
 from trimesh.exchange.export import export_mesh
+
+import db
+from config import scrap_path
 from utils import make_dir
 
 grapcad_url = 'https://grabcad.com'
@@ -21,8 +20,8 @@ login_url = f'{grapcad_url}/login'
 sw_ext_mapping = {
     'stl': '.stl',
     'obj': '.obj',
-    'creo parametric': '.prt',
-    'solidworks': '.sldprt'
+    'ptc-creo-parametric': '.prt',
+    'solidworks': '.sldprt',
 }
 
 
@@ -76,6 +75,8 @@ def download_zipfile(cadid, output_dir):
 def unzip_file(zip_file, output_dir=None):
     if not output_dir:
         output_dir = zip_file.replace('.zip', '')
+
+    # import zipfile
     # zip_ref = zipfile.ZipFile(zip_file, 'r')
     # zip_ref.extractall()
     # zip_ref.close()

@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
-=======
->>>>>>> 6197fb91b198a8179094f56d939fc1558ed20266
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -196,4 +193,6 @@ imgdump
 obj_img
 
 .idea
-*.log
+log/*
+config.py
+*.zip
