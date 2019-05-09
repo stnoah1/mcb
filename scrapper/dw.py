@@ -4,7 +4,8 @@ from tqdm import tqdm
 
 import db
 from utils import make_dir
-from config import skp_path
+from config import dw_path
+from scrapper.base import filter_escape_char
 
 url = 'https://3dwarehouse.sketchup.com/warehouse/v1.0/entities'
 
@@ -43,10 +44,22 @@ def download(keyword, item):
     else:
         return False
 
-    output_dir = f'{skp_path}/{keyword}'
+    output_dir = f'{dw_path}/{keyword}'
     make_dir(output_dir)
 
     return wget.download(url, out=output_dir)
+
+
+def is_model(cadid):
+    return not db.query(f"SELECT * from dw_files WHERE id='{cadid}'").empty
+
+
+def insert_search_log(keyword, total):
+    return db.insert('search_log', **{'keyword': keyword, 'website': '3DW', 'total': total})
+
+
+def insert_model(id, name, image, path):
+    return db.insert('dw_files', ignore=True, **{'id': id, 'name': name, 'image': image, 'path': path})
 
 
 def run(keyword):
@@ -54,23 +67,25 @@ def run(keyword):
     init_results = search(keyword, per_search, offset=0)
     total = init_results['total']
     total_search = total // per_search
-
+    insert_search_log(keyword, total)
+    print(f'{total} models found')
     for i in range(total_search + 1):
         results = search(keyword, per_search, offset=i * per_search)
         for item in tqdm(results['entries']):
+            id = item['id']
+            name = item['title']
+            name = filter_escape_char(name)
+
+            if is_model(id):
+                continue
+
             path = download(keyword, item)
             if not path:
                 continue
 
-            id = item['id']
-            name = item['title']
             if 'bot_smontage' in item['binaryNames']:
                 image = item['binaries']['bot_smontage']['contentUrl']
             else:
                 image = item['binaries']['bot_lt']['contentUrl']
 
-            db.insert('dw_files', ignore=True, **{'id': id, 'name': name, 'image': image, 'path': path})
-
-
-if __name__ == "__main__":
-    run('motor')
+            insert_model(id, name, image, path)

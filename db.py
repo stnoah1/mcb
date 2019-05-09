@@ -33,14 +33,14 @@ class DBConn:
     def insert_df(self, df, table):
         return df.to_sql(table, self.engine, if_exists='append', index=False)
 
-    def insert(self, table, ignore=False, **params):
+    def insert(self, table, ignore=False, pk='id', **params):
         keys = ",".join(params.keys())
         values = ",".join("\'" + str(value) + "\'" for value in params.values())
         output = self.engine.execute(
             f'INSERT INTO {table} ({keys}) '
             f'VALUES ({values}) '
             f'{"ON CONFLICT DO NOTHING" if ignore else ""} '
-            f'RETURNING id;'
+            f'RETURNING {pk};'
         ).fetchall()
         if output:
             return output[0][0]

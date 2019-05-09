@@ -4,14 +4,14 @@ import shutil
 from datetime import datetime
 from os.path import join
 
+import db
 import requests
 import trimesh
 import wget
+from scrapper.base import filter_escape_char
+from config import grabcad_path
 from tqdm import tqdm
 from trimesh.exchange.export import export_mesh
-
-import db
-from config import scrap_path
 from utils import make_dir
 
 grapcad_url = 'https://grabcad.com'
@@ -36,23 +36,28 @@ def search(keyword, softwares, page=1, per_page=100, sort='following', time='all
     }
     r = requests.post(api_url, data=payload)
     if r.status_code == 200:
-        result = []
+        models = []
+        images = []
         for item in r.json()['models']:
-            result.append(item['cached_slug'])
-        return result, r.json()['total_entries']
+            models.append(item['cached_slug'])
+            images.append(item['preview_image'])
+        return models, images, r.json()['total_entries']
     else:
         raise ConnectionError
 
 
-def get_model_names(keyword, softwares=None):
+def get_models(keyword, softwares=None):
     if softwares is None:
         softwares = ["obj"]
     per_page = 100
-    model_names, total_models = search(keyword, per_page=per_page, softwares=softwares)
+    model_names, images, total_models = search(keyword, per_page=per_page, softwares=softwares)
+    insert_search_log(keyword, total_models, softwares)
     for i in tqdm(range(total_models // per_page)):
-        model_name, _ = search(keyword, page=i + 2, softwares=softwares)
+        model_name, image, _ = search(keyword, page=i + 2, softwares=softwares)
         model_names += model_name
-    return model_names
+        images += image
+    print(f'{total_models} models found.')
+    return model_names, images
 
 
 def get_cadid(cached_slug):
@@ -113,7 +118,7 @@ def move_file(file, dst_dir):
 def convert_to_obj(file):
     basename = os.path.basename(file)
     filename, ext = os.path.splitext(basename)
-    if ext.lower() != '.obj':
+    if ext.lower() == '.stl':
         mesh = trimesh.load_mesh(file)
         obj_file = file.replace(ext, '.obj')
         export_mesh(mesh, obj_file, file_type='obj')
@@ -123,16 +128,18 @@ def convert_to_obj(file):
         return file
 
 
-def insert_search_log(keyword, softwares):
-    return db.insert('search_log', **{'keyword': keyword, 'softwares': ';'.join(softwares)})
+def insert_search_log(keyword, total, softwares):
+    return db.insert('search_log',
+                     **{
+                         'keyword': keyword,
+                         'etc': f"softwares : {';'.join(softwares)}",
+                         'website': 'grabCAD',
+                         'total': total
+                     })
 
 
-def insert_search_result(model_name, search_id):
-    return db.insert('search_results', **{'model_name': model_name, 'search_id': search_id})
-
-
-def insert_grabcad_model(model_name, cadid):
-    return db.insert('grabcad_model', ignore=True, **{'model_name': model_name, 'cadid': cadid})
+def insert_grabcad_model(model_name, cadid, image):
+    return db.insert('grabcad_models', ignore=True, **{'name': model_name, 'id': cadid, 'image': image})
 
 
 def insert_grabcad_file(cadid, filepath):
@@ -143,31 +150,23 @@ def is_model(cadid):
     return not db.query(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
 
 
-def run(keyword, limit=0, softwares=None):
+def run(keyword, softwares=None):
     keyword = keyword.lower()
-    print(keyword)
     if softwares is None:
-        softwares = ['obj', 'stl']
+        softwares = ['obj']
 
-    output_dir = f'{scrap_path}/{keyword}'
+    output_dir = f'{grabcad_path}/{keyword}'
     make_dir(output_dir)
 
     # search models
-    model_names = get_model_names(keyword, softwares=softwares)
-    search_id = insert_search_log(keyword, softwares)
+    model_names, model_images = get_models(keyword, softwares=softwares)
 
-    if limit:
-        limit = min(limit, len(model_names))
-
-    print(f'{len(model_names)} models found.')
-
-    no_model = 0
-    for model_name in tqdm(model_names):
+    for model_name, model_image in tqdm(zip(model_names, model_images)):
+        model_name = filter_escape_char(model_name)
 
         # filter by model name
         if keyword not in model_name.lower():
             continue
-
 
         # check model validity
         cadid = get_cadid(model_name)
@@ -176,11 +175,9 @@ def run(keyword, limit=0, softwares=None):
 
         # check db
         if is_model(cadid):
-            insert_search_result(model_name, search_id)
             continue
 
-        insert_grabcad_model(model_name, cadid)
-        insert_search_result(model_name, search_id)
+        insert_grabcad_model(model_name, cadid, model_image)
 
         # unzip model
         zip_file = download_zipfile(cadid, output_dir)
@@ -197,11 +194,6 @@ def run(keyword, limit=0, softwares=None):
             moved_file = move_file(join(unzipped_dir, file), output_dir)
             obj_file = convert_to_obj(moved_file)
             insert_grabcad_file(cadid, obj_file)
-            no_model += 1
 
         # remove unzipped directory
         shutil.rmtree(unzipped_dir)
-
-        # stop if enough models
-        if limit and no_model > limit:
-            break
