@@ -87,7 +87,6 @@ def unzip_file(zip_file, output_dir=None):
 
 def filter_files(keyword, unzipped_dir, softwares):
     formats = [sw_ext_mapping[software] for software in softwares]
-
     files = []
     for file in os.listdir(unzipped_dir):
         filename, ext = os.path.splitext(file)
@@ -208,7 +207,7 @@ def scrap(keyword, limit=0, softwares=None):
 
 if __name__ == "__main__":
     keywords = db.query('SELECT name FROM labels where use=TRUE')
-    logging.basicConfig(filename=f'{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.DEBUG)
+    logging.basicConfig(filename=f'log/{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.DEBUG)
 
     for idx, keyword in keywords.iterrows():
         try:
@@ -216,5 +215,3 @@ if __name__ == "__main__":
         except Exception as e:
             logging.debug(f'[{keyword}]:{e}')
             continue
-    # scrap(keyword='bolts', softwares=['obj', 'stl'])
-    # unzip_file('/mnt/4TWD/grabCAD/bolts/cluster-of-bolts.zip')
