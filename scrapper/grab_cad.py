@@ -139,8 +139,8 @@ def insert_grabcad_file(cadid, filepath):
     return db.insert('grabcad_files', ignore=True, **{'cadid': cadid, 'file': filepath})
 
 
-def is_model(model_name):
-    return not db.query(f"SELECT * from grabcad_files WHERE model_name='{model_name}'").empty
+def is_model(cadid):
+    return not db.query(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
 
 
 def scrap(keyword, limit=0, softwares=None):
@@ -168,15 +168,17 @@ def scrap(keyword, limit=0, softwares=None):
         if keyword not in model_name.lower():
             continue
 
-        # check db
-        if is_model(model_name):
-            insert_search_result(model_name, search_id)
-            continue
 
         # check model validity
         cadid = get_cadid(model_name)
         if not cadid:
             continue
+
+        # check db
+        if is_model(cadid):
+            insert_search_result(model_name, search_id)
+            continue
+
         insert_grabcad_model(model_name, cadid)
         insert_search_result(model_name, search_id)
 

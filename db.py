@@ -36,12 +36,16 @@ class DBConn:
     def insert(self, table, ignore=False, **params):
         keys = ",".join(params.keys())
         values = ",".join("\'" + str(value) + "\'" for value in params.values())
-        return self.engine.execute(
-                f'INSERT INTO {table} ({keys}) '
-                f'VALUES ({values}) '
-                f'{"ON CONFLICT DO NOTHING" if ignore else ""} '
-                f'RETURNING id;'
-        ).fetchall()[0][0]
+        output = self.engine.execute(
+            f'INSERT INTO {table} ({keys}) '
+            f'VALUES ({values}) '
+            f'{"ON CONFLICT DO NOTHING" if ignore else ""} '
+            f'RETURNING id;'
+        ).fetchall()
+        if output:
+            return output[0][0]
+        else:
+            return None
 
     def __exit__(self, type, value, traceback):
         self.engine.dispose()
