@@ -143,7 +143,7 @@ def is_model(cadid):
     return not db.query(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
 
 
-def scrap(keyword, limit=0, softwares=None):
+def run(keyword, limit=0, softwares=None):
     keyword = keyword.lower()
     print(keyword)
     if softwares is None:
@@ -205,15 +205,3 @@ def scrap(keyword, limit=0, softwares=None):
         # stop if enough models
         if limit and no_model > limit:
             break
-
-
-if __name__ == "__main__":
-    keywords = db.query('SELECT name FROM labels where use=TRUE')
-    logging.basicConfig(filename=f'log/{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.DEBUG)
-
-    for idx, keyword in keywords.iterrows():
-        try:
-            scrap(keyword=keyword['name'], softwares=['obj', 'stl'])
-        except Exception as e:
-            logging.debug(f'[{keyword}]:{e}')
-            continue
