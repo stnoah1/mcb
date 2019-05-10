@@ -5,12 +5,12 @@ from tqdm import tqdm
 import db
 from utils import make_dir
 from config import dw_path
-from scrapper.base import filter_escape_char
+from scrapper.base import filter_escape_char, unzip_file
 
 url = 'https://3dwarehouse.sketchup.com/warehouse/v1.0/entities'
 
 
-def search(keyword, per_search, offset=0):
+def search(keyword, per_search=100, offset=0):
     payload = {
         'count': per_search,
         'recordEvent': 'false',
@@ -35,12 +35,8 @@ def download(keyword, item):
     if keyword not in item['title'].lower():
         return False
 
-    if 's18' in item['binaryNames']:
+    if 'zip' in item['binaryNames']:
         url = item['binaries']['s18']['url']
-    elif 's17' in item['binaryNames']:
-        url = item['binaries']['s17']['url']
-    elif 's16' in item['binaryNames']:
-        url = item['binaries']['s16']['url']
     else:
         return False
 
@@ -59,7 +55,8 @@ def insert_search_log(keyword, total):
 
 
 def insert_model(id, name, image, path):
-    return db.insert('dw_files', ignore=True, **{'id': id, 'name': name, 'image': image, 'path': path})
+    return db.insert('dw_files', ignore=True,
+                     **{'id': id, 'name': name, 'image': image, 'path': filter_escape_char(path)})
 
 
 def run(keyword):
@@ -79,13 +76,18 @@ def run(keyword):
             if is_model(id):
                 continue
 
-            path = download(keyword, item)
-            if not path:
+            zip_file = download(keyword, item)
+            if not zip_file:
                 continue
 
-            if 'bot_smontage' in item['binaryNames']:
-                image = item['binaries']['bot_smontage']['contentUrl']
-            else:
-                image = item['binaries']['bot_lt']['contentUrl']
+            unzipped_file = unzip_file(path)
+            moved_file = move_file(join(unzipped_dir, file), output_dir)
+            obj_file = convert_to_obj(moved_file)
+
+            # if 'bot_smontage' in item['binaryNames']:
+            #     image = item['binaries']['bot_smontage']['contentUrl']
+            # else:
+            image = item['binaries']['bot_lt']['contentUrl']
 
             insert_model(id, name, image, path)
+
