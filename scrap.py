@@ -19,10 +19,10 @@ def search(keyword, websites=['grabcad', '3dw']):
     if '3dw' in websites:
 
         logging.debug('3DW')
-        # try:
-        dw.run(keyword=keyword)
-        # except Exception as e:
-        #     logging.error(f'[{keyword}]:{e}')
+        try:
+            dw.run(keyword=keyword)
+        except Exception as e:
+            logging.error(f'[{keyword}]:{e}')
 
 
 def search_keywords_db():

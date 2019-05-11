@@ -1,17 +1,14 @@
-import logging
 import os
 import shutil
-from datetime import datetime
 from os.path import join
 
-import db
 import requests
-import trimesh
 import wget
-from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
-from config import grabcad_path
 from tqdm import tqdm
-from trimesh.exchange.export import export_mesh
+
+import db
+from config import grabcad_path
+from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
 from utils import make_dir
 
 grapcad_url = 'https://grabcad.com'
