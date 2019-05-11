@@ -97,7 +97,6 @@ def run(keyword):
             unzipped_dir = unzip_file(zip_file)
             files = filter_files(unzipped_dir)
             for file in files:
-                print(file)
                 moved_file = move_file(join(unzipped_dir, file), output_dir)
                 obj_file = convert_to_obj(moved_file)
 
