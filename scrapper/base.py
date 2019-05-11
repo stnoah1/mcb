@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from config import asiimp_path
+
 
 def filter_escape_char(char):
     return char.replace("\'", "\'\'")
@@ -42,7 +44,7 @@ def convert_to_obj(file):
     filename, ext = os.path.splitext(basename)
     if ext.lower() in ['.stl', '.dae']:
         obj_file = file.replace(ext, '.obj')
-        os.system(f'assimp export "{file}" "{obj_file}"')
+        os.system(f'{asiimp_path} export "{file}" "{obj_file}"')
         os.remove(file)
 
         mtl_file = file.replace(ext, '.mtl')
