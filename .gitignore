@@ -193,7 +193,9 @@ imgdump
 obj_img
 
 .idea
-log/*
+log
 config.py
 *.zip
 *.tmp
+
+3DW

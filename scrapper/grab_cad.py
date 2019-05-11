@@ -8,7 +8,7 @@ import db
 import requests
 import trimesh
 import wget
-from scrapper.base import filter_escape_char, unzip_file
+from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
 from config import grabcad_path
 from tqdm import tqdm
 from trimesh.exchange.export import export_mesh

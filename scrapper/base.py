@@ -1,4 +1,8 @@
 import os
+import shutil
+
+import trimesh
+from trimesh.exchange.export import export_mesh
 
 
 def filter_escape_char(char):
@@ -17,7 +21,7 @@ def unzip_file(zip_file, output_dir=None):
     # zip_ref = zipfile.ZipFile(zip_file, 'r')
     # zip_ref.extractall()
     # zip_ref.close()
-    os.system(f'unzip -o {zip_file} -d {output_dir}')
+    os.system(f'unzip -o "{zip_file}" -d "{output_dir}"')
     os.remove(zip_file)
     return output_dir
 
@@ -40,10 +44,13 @@ def convert_to_obj(file):
     basename = os.path.basename(file)
     filename, ext = os.path.splitext(basename)
     if ext.lower() in ['.stl', '.dae']:
-        mesh = trimesh.load_mesh(file)
         obj_file = file.replace(ext, '.obj')
-        export_mesh(mesh, obj_file, file_type='obj')
+        os.system(f'assimp export "{file}" "{obj_file}"')
         os.remove(file)
+
+        mtl_file = file.replace(ext, '.mtl')
+        if os.path.exists(mtl_file):
+            os.remove(mtl_file)
         return obj_file
     else:
         return file
