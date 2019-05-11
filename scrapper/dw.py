@@ -80,7 +80,7 @@ def run(keyword):
             if not zip_file:
                 continue
 
-            unzipped_file = unzip_file(path)
+            unzipped_dir = unzip_file(path)
             moved_file = move_file(join(unzipped_dir, file), output_dir)
             obj_file = convert_to_obj(moved_file)
 
@@ -89,5 +89,5 @@ def run(keyword):
             # else:
             image = item['binaries']['bot_lt']['contentUrl']
 
-            insert_model(id, name, image, path)
+            insert_model(id, name, image, obj_file)
 

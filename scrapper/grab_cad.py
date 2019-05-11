@@ -88,19 +88,6 @@ def filter_files(keyword, unzipped_dir, softwares):
     return files
 
 
-def convert_to_obj(file):
-    basename = os.path.basename(file)
-    filename, ext = os.path.splitext(basename)
-    if ext.lower() == '.stl':
-        mesh = trimesh.load_mesh(file)
-        obj_file = file.replace(ext, '.obj')
-        export_mesh(mesh, obj_file, file_type='obj')
-        os.remove(file)
-        return obj_file
-    else:
-        return file
-
-
 def insert_search_log(keyword, total, softwares):
     return db.insert('search_log',
                      **{
