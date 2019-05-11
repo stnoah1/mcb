@@ -1,9 +1,6 @@
 import os
 import shutil
 
-import trimesh
-from trimesh.exchange.export import export_mesh
-
 
 def filter_escape_char(char):
     return char.replace("\'", "\'\'")
