@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>HG annotator</title>
+    <meta name="description" content="A lightweight jQuery plugin for creating fluid galleries as seen on Flickr and Google Images.">
+    <link rel="shortcut icon" href="https://hyung-gun.me/images/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <style>
+        body { margin: 0; padding: 0; border: 0; min-width: 320px; color: #777; }
+        html, button, input, select, textarea, .pure-g [class *= "pure-u"] { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.02em; }
+        p, td { line-height: 1.5; }
+        ul { padding: 0 0 0 20px; }
+
+        th { background: #eee; white-space: nowrap; }
+        th, td { padding: 10px; text-align: left; vertical-align: top; font-size: .9em; font-weight: normal; border-right: 1px solid #fff; }
+        td:first-child { white-space: nowrap; color: #008000; width: 1%; font-style: italic; }
+
+        h1, h2, h3 { color: #4b4b4b; font-family: "Source Sans Pro", sans-serif; font-weight: 300; margin: 0 0 1.2em; }
+        h1 { font-size: 4.5em; color: #1f8dd6; margin: 0 0 .4em; }
+        h2 { font-size: 2em; color: #636363; }
+        h3 { font-size: 1.8em; color: #4b4b4b; margin: 1.8em 0 .8em }
+        h4 { font: bold 1em sans-serif; color: #636363; margin: 4em 0 1em; }
+        a { color: #4e99c7; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        p, pre { margin: 0 0 1.2em; }
+        ::selection { color: #fff; background: #328efd; }
+        ::-moz-selection { color: #fff; background: #328efd; }
+
+        @media (max-width:480px) {
+            h1 { font-size: 3em; }
+            h2 { font-size: 1.8em; }
+            h3 { font-size: 1.5em; }
+            td:first-child { white-space: normal; }
+        }
+
+        .inline-code { padding: 1px 5px; background: #eee; border-radius: 2px; }
+        pre { padding: 15px 10px; font-size: .9em; color: #555; background: #edf3f8; }
+        pre i { color: #aaa; } /* comments */
+        pre b { font-weight: normal; color: #cf4b25; } /* strings */
+        pre em { color: #0c59e9; } /* numeric */
+
+        /* Pure CSS */
+        .pure-button { margin: 5px 0; text-decoration: none !important; }
+        .button-lg { margin: 5px 0; padding: .65em 1.6em; font-size: 105%; }
+
+        /* demo4 */
+        #demo4 .item { margin: 0 1px 10px 1px; border: 0; }
+        #demo4 .item .img { position: absolute; left: 0; top: 0; right: 2px; bottom: 20px; }
+        #demo4 .bottom { position: absolute; left: 2px; bottom: 0; right: 2px; font-size: 13px; height: 18px; }
+
+        /* demo5 */
+        #demo5 .over { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px 6px; font-size: 13px; color: #fff; background: #222; background: rgba(0,0,0,.7); }
+
+        /* demo6 */
+        #demo6 a { display: block; position: absolute; top: 0; right: 0; bottom: -12px; left: 0; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
+</head>
+<body>
+
+    <div style="max-width:100%;margin:auto;padding:0 10px 50px">
+`        <div id="demo5" class="flex-images">
+            {% for idx, rows in img_info.iterrows() %}
+                <div class="item">
+                    <img src={{rows['image']}} data-src={{rows['image']}}>
+                    <div class="over">{{rows['name']}}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="fb-root"></div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
+    <script>
+        $('#demo1').flexImages({rowHeight: 140});
+        $('#demo2').flexImages({rowHeight: 120, truncate: 1, maxRows: 2});
+        $('#demo3').flexImages({object: 'iframe', rowHeight: 200, truncate: 1});
+        $('#demo4').flexImages({ truncate: 1 });
+        $('#demo5').flexImages({ truncate: 1 });
+        $('#demo6').flexImages({ truncate: 1 });
+
+        if (~window.location.href.indexOf('http')) {
+            (function() {var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;po.src = 'https://apis.google.com/js/plusone.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);})();
+            (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=114593902037957";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+            $('#github_social').html('\
+                <iframe style="float:left;margin-right:15px" src="//ghbtns.com/github-btn.html?user=Pixabay&repo=jQuery-flexImages&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>\
+                <iframe style="float:left;margin-right:15px" src="//ghbtns.com/github-btn.html?user=Pixabay&repo=jQuery-flexImages&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>\
+            ');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ========== Meta Tags ========== -->
+    <meta charset="UTF-8">
+    <meta name="description" content="Cocoon -Portfolio">
+    <meta name="keywords" content="Cocoon , Portfolio">
+    <meta name="author" content="Pharaohlab">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- ========== Title ========== -->
+    <title> Cocoon -Portfolio</title>
+    <!-- ========== Favicon Ico ========== -->
+    <!--<link rel="icon" href="fav.ico">-->
+    <!-- ========== STYLESHEETS ========== -->
+    <!-- Bootstrap CSS -->
+    <link href="" rel="stylesheet">
+    <!-- Fonts Icon CSS -->
+<!--    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">-->
+<!--    <link href="{{ url_for('static', filename='css/et-line.css') }}" rel="stylesheet">-->
+<!--    <link href="{{ url_for('static', filename='css/ionicons.min.css') }}" rel="stylesheet">-->
+    <!-- Carousel CSS -->
+<!--    <link href="{{ url_for('static', filename='css/slick.css') }}" rel="stylesheet">-->
+    <!-- Magnific-popup -->
+<!--    <link href="{{ url_for('static', filename='css/magnific-popup.css') }}" rel="stylesheet">-->
+    <!-- Animate CSS -->
+<!--    <link href="{{ url_for('static', filename='css/animate.min.css') }}" rel="stylesheet">-->
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="loader">
+    <div class="loader-outter"></div>
+    <div class="loader-inner"></div>
+</div>
+
+
+<div id="easyPaginate">0
+    {% for img_url in img_urls %}
+<!--        <div class="grid-item branding  col-sm-12 col-md-6 col-lg-3">-->
+<!--            <a href={{img_url}} title="project name 1">-->
+<!--                <div class="project_box_one">-->
+<!--                    <img src={{img_url}} alt="pro1"/>-->
+<!--                    <div class="product_info">-->
+<!--                        <div class="product_info_text">-->
+<!--                            <div class="product_info_text_inner">-->
+<!--                                <i class="ion ion-plus"></i>-->
+<!--                                <h4>project name</h4>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </a>-->
+<!--        </div>-->
+        <img src={{img_url}} alt="test"/>
+    {% for img_url in img_urls %}
+</div>
+
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.easyPaginate.js') }}"></script>
+<!--&lt;!&ndash; jquery &ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>-->
+<!--&lt;!&ndash; bootstrap &ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/popper.js') }}"></script>-->
+<!--<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
+<!--<script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>-->
+<!--&lt;!&ndash;slick carousel &ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/slick.min.js') }}"></script>-->
+<!--&lt;!&ndash;Portfolio Filter&ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/imgloaded.js') }}"></script>-->
+<!--<script src="{{ url_for('static', filename='js/isotope.js') }}"></script>-->
+<!--&lt;!&ndash; Magnific-popup &ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>-->
+<!--&lt;!&ndash;Counter&ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/jquery.counterup.min.js') }}"></script>-->
+<!--&lt;!&ndash; WOW JS &ndash;&gt;-->
+<!--<script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>-->
+<!--&lt;!&ndash; Custom js &ndash;&gt;-->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
