@@ -67,6 +67,10 @@ def insert_model(id, name, image, path):
                      **{'id': id, 'name': name, 'image': image, 'path': filter_escape_char(path)})
 
 
+def update_thumbnail():
+    db.query('select * from ')
+
+
 def run(keyword):
     per_search = 100
     init_results = search(keyword, per_search, offset=0)

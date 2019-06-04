@@ -1,0 +1,11 @@
+tqdm
+scipy
+numpy
+sqlalchemy
+sshtunnel
+Flask
+pandas
+flask_assets
+psycopg2
+requests
+wget
