@@ -25,21 +25,21 @@ def get_grabcad_img_info(label):
 
 @app.route("/")
 def index():
-    return "Flask App!"
+    return render_template('index.html')
 
 
 @app.route("/3dw/<string:label>/")
 def dw_view(label):
     img_info = get_3dw_img_info(label)
     print(f'{len(img_info)} was found!!')
-    return render_template('index.html', img_info=img_info)
+    return render_template('gallery.html', img_info=img_info)
 
 
 @app.route("/grabcad/<string:label>/")
 def grabcad_view(label):
     img_info = get_grabcad_img_info(label)
     print(f'{len(img_info)} was found!!')
-    return render_template('index.html', img_info=img_info)
+    return render_template('gallery.html', img_info=img_info)
 
 
 if __name__ == "__main__":
