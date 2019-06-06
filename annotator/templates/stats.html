@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #main {
+            margin: 80px 0;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0;
+            border: 0;
+            min-width: 320px;
+            color: #777;
+        }
+
+        .sidenav {
+            height: 100%; /* 100% Full-height */
+            width: 0; /* 0 width - change this with JavaScript */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Stay on top */
+            top: 0;
+            left: 0;
+            background-color: #111; /* Black*/
+            overflow-x: hidden; /* Disable horizontal scroll */
+            padding-top: 60px; /* Place content 60px from the top */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+            margin-top: 30px;
+            font-family: Arial, serif;
+        }
+
+        /* The navigation menu links */
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        /* When you mouse over the navigation links, change their color */
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        /* Position and style the close button (top right corner) */
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+
+        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+
+        .navbar {
+            background-color: #333;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+            height: 40px;
+            padding: 10px;
+            font-family: Arial, serif;
+        }
+
+        #stats {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            padding: 30px;
+            width: 50%;
+        }
+
+        #stats td, #stats th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #stats tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #stats tr:hover {
+            background-color: #ddd;
+        }
+
+        #stats th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+    <title>Statistic</title>
+</head>
+<body>
+<div class="navbar">
+    <span style="font-size:30px;cursor:pointer;float:left;" onclick="toggleNav()">&#9776;</span>
+    <div style="width:200px;float:left;font-size:30px;padding:0 40px;color:white; ">Statistics</div>
+</div>
+
+<div id="mySidenav" class="sidenav">
+    <a href="/">Home</a>
+    <a href="/">Annotator</a>
+    <a href="/stats">Statistic</a>
+</div>
+
+<div id="main" align=center>
+    {% for table in tables %}
+    {{ table|safe }}
+    {% endfor %}
+</div>
+</body>
+<script>
+    function toggleNav() {
+        console.log(document.getElementById("mySidenav").style.width);
+        if (document.getElementById("mySidenav").style.width !== "0px") {
+            closeNav()
+        } else {
+            openNav()
+        }
+    }
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+</script>
+</html>
