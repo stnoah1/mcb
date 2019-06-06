@@ -104,7 +104,7 @@ def insert_grabcad_file(cadid, filepath):
 
 
 def is_model(cadid):
-    return not db.query(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
+    return not db.read(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
 
 
 def run(keyword, softwares=None):

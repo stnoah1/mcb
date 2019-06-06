@@ -27,7 +27,7 @@ class DBConn:
             f'postgresql://{user}:{password}@{localhost}:{self.port}/{database}')
         return self
 
-    def query(self, q):
+    def read(self, q):
         return pd.read_sql_query(q, con=self.engine)
 
     def insert_df(self, df, table):
@@ -47,15 +47,18 @@ class DBConn:
         else:
             return None
 
+    def raw_query(self, q):
+        self.engine.execute(q)
+
     def __exit__(self, type, value, traceback):
         self.engine.dispose()
         if ssh_tunnel:
             self.server.__exit__()
 
 
-def query(q):
+def read(q):
     with DBConn() as conn:
-        return conn.query(q)
+        return conn.read(q)
 
 
 def insert_df(df, table):
@@ -66,3 +69,8 @@ def insert_df(df, table):
 def insert(table, **params):
     with DBConn() as conn:
         return conn.insert(table, **params)
+
+
+def query(q):
+    with DBConn() as conn:
+        return conn.raw_query(q)

@@ -1,96 +1,612 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>HG annotator</title>
-    <meta name="description" content="A lightweight jQuery plugin for creating fluid galleries as seen on Flickr and Google Images.">
+    <meta name="description"
+          content="A lightweight jQuery plugin for creating fluid galleries as seen on Flickr and Google Images.">
     <link rel="shortcut icon" href="https://hyung-gun.me/images/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
     <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <style>
-
-        body { margin: 0px; padding: 0; border: 0; min-width: 320px; color: #777; }
-        html, button, input, select, textarea, .pure-g [class *= "pure-u"] { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.02em; }
-        p, td { line-height: 1.5; }
-        ul { padding: 0 0 0 20px; }
-
-        th { background: #eee; white-space: nowrap; }
-        th, td { padding: 10px; text-align: left; vertical-align: top; font-size: .9em; font-weight: normal; border-right: 1px solid #fff; }
-        td:first-child { white-space: nowrap; color: #008000; width: 1%; font-style: italic; }
-
-        h1, h2, h3 { color: #4b4b4b; font-family: "Source Sans Pro", sans-serif; font-weight: 300; margin: 0 0 1.2em; }
-        h1 { font-size: 4.5em; color: #1f8dd6; margin: 0 0 .4em; }
-        h2 { font-size: 2em; color: #636363; }
-        h3 { font-size: 1.8em; color: #4b4b4b; margin: 1.8em 0 .8em }
-        h4 { font: bold 1em sans-serif; color: #636363; margin: 4em 0 1em; }
-        a { color: #4e99c7; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        p, pre { margin: 0 0 1.2em; }
-        ::selection { color: #fff; background: #328efd; }
-        ::-moz-selection { color: #fff; background: #328efd; }
-
-        @media (max-width:480px) {
-            h1 { font-size: 3em; }
-            h2 { font-size: 1.8em; }
-            h3 { font-size: 1.5em; }
-            td:first-child { white-space: normal; }
+        .custom-select {
+            position: relative;
+            float: left;
+            font-family: Arial, serif;
         }
 
-        .inline-code { padding: 1px 5px; background: #eee; border-radius: 2px; }
-        pre { padding: 15px 10px; font-size: .9em; color: #555; background: #edf3f8; }
-        pre i { color: #aaa; } /* comments */
-        pre b { font-weight: normal; color: #cf4b25; } /* strings */
-        pre em { color: #0c59e9; } /* numeric */
+        .submit {
+            position: relative;
+            float: left;
+            color: #fff;
+            background: #328efd;
+            border: none;
+            padding: 8px 16px;
+            text-decoration: none;
+            cursor: pointer;
+            height: 37px;
+        }
+
+        .custom-select select {
+            display: none; /*hide original SELECT element:*/
+        }
+
+        .select-selected {
+            background-color: Black;
+        }
+
+        /*style the arrow inside the select element:*/
+        .select-selected:after {
+            position: absolute;
+            content: "";
+            top: 14px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #fff transparent transparent transparent;
+        }
+
+        /*point the arrow upwards when the select box is open (active):*/
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #fff transparent;
+            top: 7px;
+        }
+
+        /*style the items (options), including the selected item:*/
+        .select-items li, .select-selected {
+            color: #ffffff;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+            cursor: pointer;
+            user-select: none;
+            z-index: 0;
+
+        }
+
+        /*hide the items when the select box is closed:*/
+        .select-hide {
+            display: none;
+        }
+
+        .select-items li:hover, .same-as-selected {
+            background-color: rgba(50, 50, 50, 1);
+        }
+
+        body {
+            margin: 0px;
+            padding: 0;
+            border: 0;
+            min-width: 320px;
+            color: #777;
+        }
+
+        html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 1.02em;
+        }
+
+        p, td {
+            line-height: 1.5;
+        }
+
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            font-size: .9em;
+            font-weight: normal;
+            border-right: 1px solid #fff;
+        }
+
+        td:first-child {
+            white-space: nowrap;
+            color: #008000;
+            width: 1%;
+            font-style: italic;
+        }
+
+        h1, h2, h3 {
+            color: #4b4b4b;
+            font-family: "Source Sans Pro", sans-serif;
+            font-weight: 300;
+            margin: 0 0 1.2em;
+        }
+
+        h1 {
+            font-size: 4.5em;
+            color: #1f8dd6;
+            margin: 0 0 .4em;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #636363;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #4b4b4b;
+            margin: 1.8em 0 .8em
+        }
+
+        h4 {
+            font: bold 1em sans-serif;
+            color: #636363;
+            margin: 4em 0 1em;
+        }
+
+        a {
+            color: #4e99c7;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        p, pre {
+            margin: 0 0 1.2em;
+        }
+
+        ::selection {
+            color: #fff;
+            background: #328efd;
+        }
+
+        ::-moz-selection {
+            color: #fff;
+            background: #328efd;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 3em;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            h3 {
+                font-size: 1.5em;
+            }
+
+            td:first-child {
+                white-space: normal;
+            }
+        }
+
+        .inline-code {
+            padding: 1px 5px;
+            background: #eee;
+            border-radius: 2px;
+        }
+
+        pre {
+            padding: 15px 10px;
+            font-size: .9em;
+            color: #555;
+            background: #edf3f8;
+        }
+
+        pre i {
+            color: #aaa;
+        }
+
+        /* comments */
+        pre b {
+            font-weight: normal;
+            color: #cf4b25;
+        }
+
+        /* strings */
+        pre em {
+            color: #0c59e9;
+        }
+
+        /* numeric */
 
         /* Pure CSS */
-        .pure-button { margin: 5px 0; text-decoration: none !important; }
-        .button-lg { margin: 5px 0; padding: .65em 1.6em; font-size: 105%; }
+        .pure-button {
+            margin: 5px 0;
+            text-decoration: none !important;
+        }
 
-        /* demo4 */
-        #demo4 .item { margin: 0 1px 10px 1px; border: 0; }
-        #demo4 .item .img { position: absolute; left: 0; top: 0; right: 2px; bottom: 20px; }
-        #demo4 .bottom { position: absolute; left: 2px; bottom: 0; right: 2px; font-size: 13px; height: 18px; }
+        .button-lg {
+            margin: 5px 0;
+            padding: .65em 1.6em;
+            font-size: 105%;
+        }
 
-        /* demo5 */
-        #demo5 .over { position: absolute; bottom: 0; left: 0; right: 0; padding: 4px 6px; font-size: 13px; color: #fff; background: #222; background: rgba(0,0,0,.7); }
+        ul {
+            max-height: 470px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            padding: 0;
+            margin-block-start: 0;
+            margin-block-end: 1em;
+        }
 
-        /* demo6 */
-        #demo6 a { display: block; position: absolute; top: 0; right: 0; bottom: -12px; left: 0; }
+
+        li {
+            list-style-type: None;
+            font-size: 16px;
+            color: #fff;
+            background: black;
+        }
+
+
+        #image .over {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 4px 6px;
+            font-size: 13px;
+            color: #fff;
+            background: #222;
+            background: rgba(0, 0, 0, .7);
+        }
+
+
+        .main {
+            padding: 16px;
+            margin-top: 50px;
+            position: relative;
+            transition: margin-left .5s;
+        }
+
+        .navbar {
+            background-color: #333;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+            height: 40px;
+            padding: 10px;
+        }
+
+        .nopad {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /*image gallery*/
+        .image-checkbox {
+            cursor: pointer;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            /*border: 100px solid transparent;*/
+            /*margin-bottom: 0;*/
+            outline: 0;
+        }
+
+        .sidenav {
+            height: 100%; /* 100% Full-height */
+            width: 0; /* 0 width - change this with JavaScript */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Stay on top */
+            top: 0;
+            left: 0;
+            background-color: #111; /* Black*/
+            overflow-x: hidden; /* Disable horizontal scroll */
+            padding-top: 60px; /* Place content 60px from the top */
+            transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+            margin-top: 30px;
+        }
+
+        /* The navigation menu links */
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        /* When you mouse over the navigation links, change their color */
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        /* Position and style the close button (top right corner) */
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+
+        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+
+        .image-checkbox-checked {
+            border-color: Red;
+        }
+
+        .image-checkbox .fa {
+            position: absolute;
+            color: white;
+            background-color: Red;
+            padding: 10px;
+            top: 0;
+            right: 0;
+        }
+
+        .image-checkbox-checked .fa {
+            display: block !important;
+        }
+
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
 </head>
 <body>
-    <div style="max-width:100%;margin:auto;padding:0 10px 50px">
-        <div id="demo5" class="flex-images">
-            {% for idx, rows in img_info.iterrows() %}
-                <div class="item">
-                    <img src={{rows['image']}} data-src={{rows['image']}}>
-                    <div class="over">{{rows['name']}}</div>
-                </div>
-            {% endfor %}
-        </div>
+<div id="mySidenav" class="sidenav">
+    <a href="/">Home</a>
+    <a href="/">Annotator</a>
+    <a href="/stats">Statistic</a>
+</div>
+
+<form action="/gallery" method="get" class="navbar">
+    <span style="font-size:30px;cursor:pointer;float:left;" onclick="toggleNav()">&#9776;</span>
+
+    <div style="width:10%;float:left;font-size:30px;padding:0 40px;color:white; ">Annotator</div>
+
+    <div class="custom-select" style="width:10%;">
+        <select id="cad" name="cad" style="z-index: 99">
+            <option value="" selected>CAD</option>
+            <option value="grabCAD">grabCAD</option>
+            <option value="3DW">3DW</option>
+        </select>
     </div>
+    <div class="custom-select" style="width:10%;">
+        <select id="keyword" name="keyword" style="z-index:99">
+            <option value="" selected>KEYWORD</option>
+            {% for keyword in keywords %}
+            <option value={{keyword}}>{{keyword.upper()}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
+    <button type="button" class="submit" onclick="removeItem(); return false;"
+            style="width:10%;float:right;margin-right: 20px">FILTER
+    </button>
+</form>
 
-    <div id="fb-root"></div>
-    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
-    <script>
-        $('#demo1').flexImages({rowHeight: 140});
-        $('#demo2').flexImages({rowHeight: 120, truncate: 1, maxRows: 2});
-        $('#demo3').flexImages({object: 'iframe', rowHeight: 200, truncate: 1});
-        $('#demo4').flexImages({ truncate: 1 });
-        $('#demo5').flexImages({ truncate: 1 });
-        $('#demo6').flexImages({ truncate: 1 });
+<div class="main" id="main">
+    <div id="image" class="flex-images">
+        {% for idx, rows in img_info.iterrows() %}
+        <div class="item nopad" style="max-width:32%;" id={{rows['id']}}>
+            <label class="image-checkbox">
+                <img class="img-responsive" src={{rows['image']}} data-src={{rows['image']}} alt="">
+                <input type="checkbox" name="image" value={{rows['id']}}>
+                <i class="fa fa-check hidden"></i>
+                <div class="over">{{rows['name']}}</div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
-        if (~window.location.href.indexOf('http')) {
-            (function() {var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;po.src = 'https://apis.google.com/js/plusone.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);})();
-            (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=114593902037957";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
-            $('#github_social').html('\
-                <iframe style="float:left;margin-right:15px" src="//ghbtns.com/github-btn.html?user=Pixabay&repo=jQuery-flexImages&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>\
-                <iframe style="float:left;margin-right:15px" src="//ghbtns.com/github-btn.html?user=Pixabay&repo=jQuery-flexImages&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>\
-            ');
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
+<script>
+    $('#image').flexImages({truncate: 1});
+
+    if (~window.location.href.indexOf('http')) {
+        (function () {
+            var po = document.createElement('script');
+            po.type = 'text/javascript';
+            po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(po, s);
+        })();
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=114593902037957";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        !function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+            if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = p + '://platform.twitter.com/widgets.js';
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }(document, 'script', 'twitter-wjs');
+    }
+</script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const cad = urlParams.get('cad');
+    const keyword = urlParams.get('keyword');
+
+    cad_selection = document.getElementById('cad');
+    try {
+        cad_selection.selectedIndex = cad_selection.querySelector('option[value="' + cad + '"]').index;
+    } catch (err) {
+        cad_selection.selectedIndex = 0;
+    }
+
+    keyword_selection = document.getElementById('keyword');
+    try {
+        keyword_selection.selectedIndex = keyword_selection.querySelector('option[value="' + keyword + '"]').index;
+    } catch (err) {
+        keyword_selection.selectedIndex = 0;
+    }
+
+    function toggleNav() {
+        console.log(document.getElementById("mySidenav").style.width);
+        if (document.getElementById("mySidenav").style.width !== "0px") {
+            closeNav()
+        } else {
+            openNav()
         }
-    </script>
+    }
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+
+    function removeElement(elementId) {
+        // Removes an element from the document
+        var element = document.getElementById(elementId);
+        element.parentNode.removeChild(element);
+    }
+
+    function getCheckedBoxes(chkboxName) {
+        var checkboxes = document.getElementsByName(chkboxName);
+        var checkboxesChecked = [];
+        // loop over them all
+        for (var i = 0; i < checkboxes.length; i++) {
+            // And stick the checked ones onto an array...
+            if (checkboxes[i].checked) {
+                checkboxesChecked.push(checkboxes[i].value);
+            }
+        }
+        // Return the array if it is non-empty, or null
+        return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+    }
+
+    // Call as
+
+    function removeItem() {
+        var xhr = new XMLHttpRequest();
+        var checkedBoxes = getCheckedBoxes("image");
+
+        xhr.open("POST", "/filter", true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            "cad-type": cad,
+            "ids": checkedBoxes,
+        }));
+        for (i = 0; i < checkedBoxes.length; i++) {
+            removeElement(checkedBoxes[i]);
+        }
+    }
+
+    var x, i, j, selElmnt, a, b, c, ul;
+    /*look for any elements with the class "custom-select":*/
+    x = document.getElementsByClassName("custom-select");
+    for (i = 0; i < x.length; i++) {
+        selElmnt = x[i].getElementsByTagName("select")[0];
+        /*for each element, create a new DIV that will act as the selected item:*/
+        a = document.createElement("DIV");
+        a.setAttribute("class", "select-selected");
+        a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+        x[i].appendChild(a);
+        /*for each element, create a new DIV that will contain the option list:*/
+        b = document.createElement("DIV");
+        b.setAttribute("class", "select-items select-hide");
+        ul = document.createElement("UL");
+        b.appendChild(ul);
+        for (j = 1; j < selElmnt.length; j++) {
+            /*for each option in the original select element,
+            create a new DIV that will act as an option item:*/
+            c = document.createElement("LI");
+            c.innerHTML = selElmnt.options[j].innerHTML;
+            c.addEventListener("click", function (e) {
+                /*when an item is clicked, update the original select box,
+                and the selected item:*/
+                var y, i, k, s, h;
+                s = this.parentNode.parentNode.parentNode.getElementsByTagName("select")[0];
+                h = this.parentNode.parentNode.previousSibling;
+                for (i = 0; i < s.length; i++) {
+                    if (s.options[i].innerHTML == this.innerHTML) {
+                        s.selectedIndex = i;
+                        h.innerHTML = this.innerHTML;
+                        y = this.parentNode.parentNode.getElementsByClassName("same-as-selected");
+                        for (k = 0; k < y.length; k++) {
+                            y[k].removeAttribute("class");
+                        }
+                        this.setAttribute("class", "same-as-selected");
+                        break;
+                    }
+                }
+                h.click();
+            });
+            ul.appendChild(c);
+        }
+        x[i].appendChild(b);
+        a.addEventListener("click", function (e) {
+            /*when the select box is clicked, close any other select boxes,
+            and open/close the current select box:*/
+            e.stopPropagation();
+            closeAllSelect(this);
+            this.nextSibling.classList.toggle("select-hide");
+            this.classList.toggle("select-arrow-active");
+        });
+    }
+
+    function closeAllSelect(elmnt) {
+        /*a function that will close all select boxes in the document,
+        except the current select box:*/
+        var x, y, i, arrNo = [];
+        x = document.getElementsByClassName("select-items");
+        y = document.getElementsByClassName("select-selected");
+        for (i = 0; i < y.length; i++) {
+            if (elmnt == y[i]) {
+                arrNo.push(i)
+            } else {
+                y[i].classList.remove("select-arrow-active");
+            }
+        }
+        for (i = 0; i < x.length; i++) {
+            if (arrNo.indexOf(i)) {
+                x[i].classList.add("select-hide");
+            }
+        }
+    }
+
+    /*if the user clicks anywhere outside the select box,
+    then close all select boxes:*/
+    document.addEventListener("click", closeAllSelect);
+
+    $(".image-checkbox").each(function () {
+        if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
+            $(this).addClass('image-checkbox-checked');
+        } else {
+            $(this).removeClass('image-checkbox-checked');
+        }
+    });
+
+    // sync the state to the input
+    $(".image-checkbox").on("click", function (e) {
+        $(this).toggleClass('image-checkbox-checked');
+        var $checkbox = $(this).find('input[type="checkbox"]');
+        $checkbox.prop("checked", !$checkbox.prop("checked"));
+        e.preventDefault();
+    });
+</script>
 </body>
 </html>

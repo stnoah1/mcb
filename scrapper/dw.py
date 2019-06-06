@@ -55,7 +55,7 @@ def filter_files(unzipped_dir):
 
 
 def is_model(cadid):
-    return not db.query(f"SELECT * from dw_files WHERE id='{cadid}'").empty
+    return not db.read(f"SELECT * from dw_files WHERE id='{cadid}'").empty
 
 
 def insert_search_log(keyword, total):
@@ -68,7 +68,7 @@ def insert_model(id, name, image, path):
 
 
 def update_thumbnail():
-    db.query('select * from ')
+    db.read('select * from ')
 
 
 def run(keyword):

@@ -26,7 +26,7 @@ def search(keyword, websites=['grabcad', '3dw']):
 
 
 def search_keywords_db():
-    keywords = db.query('SELECT * FROM keyword')
+    keywords = db.read('SELECT * FROM keyword')
 
     for idx, keyword in keywords.iterrows():
         search(keyword['name'], websites=['3dw'])

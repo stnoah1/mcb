@@ -3,7 +3,7 @@ import os
 from shutil import copy2
 
 import db
-from db import query
+from db import read
 from utils import make_dir
 from pprint import pprint
 
@@ -11,7 +11,7 @@ labeled_dir = 'labeled'
 
 
 def file_arrange():
-    df = query('select file, labels from models')
+    df = read('select file, labels from models')
     for idx, row in df.iterrows():
         for label in row['labels']:
             src = f'data/{row["file"]}'
@@ -24,7 +24,7 @@ def file_arrange():
 
 
 def label_ME444():
-    label_mapping = db.query('SELECT id, name FROM labels')
+    label_mapping = db.read('SELECT id, name FROM labels')
     for cls in os.listdir(labeled_dir):
         for obj_file in glob.glob(f'{labeled_dir}/{cls}/*.obj'):
             basename = os.path.basename(obj_file)
@@ -47,7 +47,7 @@ def get_stat_from_dir():
 
 
 def get_stat():
-    return db.query(
+    return db.read(
         '''
         SELECT * from
            (SELECT b.name, count(*) as me444
