@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from os.path import join
@@ -82,33 +83,37 @@ def run(keyword):
     for i in range(total_search + 1):
         results = search(keyword, per_search, offset=i * per_search)
         for item in tqdm(results['entries']):
-            id = item['id']
-            name = filter_escape_char(item['title'])
+            try:
+                id = item['id']
+                name = filter_escape_char(item['title'])
 
-            if is_model(id):
-                continue
+                if is_model(id):
+                    continue
 
-            if keyword not in item['title'].lower():
-                continue
+                if keyword not in item['title'].lower():
+                    continue
 
-            output_dir = f'{dw_path}/{keyword}'
-            make_dir(output_dir)
+                output_dir = f'{dw_path}/{keyword}'
+                make_dir(output_dir)
 
-            zip_file = download(output_dir, item)
-            if not zip_file:
-                continue
+                zip_file = download(output_dir, item)
+                if not zip_file:
+                    continue
 
-            unzipped_dir = unzip_file(zip_file)
-            files = filter_files(unzipped_dir)
-            for file in files:
-                moved_file = move_file(join(unzipped_dir, file), output_dir)
-                obj_file = convert_to_obj(moved_file)
+                unzipped_dir = unzip_file(zip_file)
+                files = filter_files(unzipped_dir)
+                for file in files:
+                    moved_file = move_file(join(unzipped_dir, file), output_dir)
+                    obj_file = convert_to_obj(moved_file)
 
-                # if 'bot_smontage' in item['binaryNames']:
-                #     image = item['binaries']['bot_smontage']['contentUrl']
-                # else:
-                image = item['binaries']['bot_lt']['contentUrl']
+                    # if 'bot_smontage' in item['binaryNames']:
+                    #     image = item['binaries']['bot_smontage']['contentUrl']
+                    # else:
+                    image = item['binaries']['bot_lt']['contentUrl']
 
-                insert_model(id, name, image, obj_file)
+                    insert_model(id, name, image, obj_file)
 
-            shutil.rmtree(unzipped_dir)
+                shutil.rmtree(unzipped_dir)
+
+            except Exception as e:
+                logging.error(f'[{keyword}]:{e}')

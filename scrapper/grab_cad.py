@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from os.path import join
@@ -119,38 +120,42 @@ def run(keyword, softwares=None):
     model_names, model_images = get_models(keyword, softwares=softwares)
 
     for model_name, model_image in tqdm(zip(model_names, model_images)):
-        model_name = filter_escape_char(model_name)
+        try:
+            model_name = filter_escape_char(model_name)
 
-        # filter by model name
-        if keyword not in model_name.lower():
-            continue
+            # filter by model name
+            if keyword not in model_name.lower():
+                continue
 
-        # check model validity
-        cadid = get_cadid(model_name)
-        if not cadid:
-            continue
+            # check model validity
+            cadid = get_cadid(model_name)
+            if not cadid:
+                continue
 
-        # check db
-        if is_model(cadid):
-            continue
+            # check db
+            if is_model(cadid):
+                continue
 
-        insert_grabcad_model(model_name, cadid, model_image)
+            insert_grabcad_model(model_name, cadid, model_image)
 
-        # unzip model
-        zip_file = download_zipfile(cadid, output_dir)
-        unzipped_dir = unzip_file(zip_file)
+            # unzip model
+            zip_file = download_zipfile(cadid, output_dir)
+            unzipped_dir = unzip_file(zip_file)
 
-        # extract files with valid extension
-        files = filter_files(keyword, unzipped_dir, softwares)
-        if not files:
+            # extract files with valid extension
+            files = filter_files(keyword, unzipped_dir, softwares)
+            if not files:
+                shutil.rmtree(unzipped_dir)
+                continue
+
+            # move valid files
+            for file in files:
+                moved_file = move_file(join(unzipped_dir, file), output_dir)
+                obj_file = convert_to_obj(moved_file)
+                insert_grabcad_file(cadid, obj_file)
+
+            # remove unzipped directory
             shutil.rmtree(unzipped_dir)
-            continue
 
-        # move valid files
-        for file in files:
-            moved_file = move_file(join(unzipped_dir, file), output_dir)
-            obj_file = convert_to_obj(moved_file)
-            insert_grabcad_file(cadid, obj_file)
-
-        # remove unzipped directory
-        shutil.rmtree(unzipped_dir)
+        except Exception as e:
+            logging.error(f'[{keyword}]:{e}')
