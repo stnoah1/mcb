@@ -199,3 +199,4 @@ config.py
 *.tmp
 
 3DW
+*.tmp

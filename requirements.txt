@@ -8,3 +8,5 @@ pandas
 psycopg2
 requests
 wget
+beautifulsoup4
+anytree
