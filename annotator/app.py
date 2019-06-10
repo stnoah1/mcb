@@ -12,7 +12,7 @@ app = Flask(__name__)
 def get_3dw_img_info(label):
     return read(f'''
         select A.id, A.image, A.name from 
-            (select id, image, name, split_part(path, '/', 5) as label, filter
+            (select id, image, name, split_part(path, '/', 6) as label, filter
             from dw_files) as A
         where A.label='{label}' and A.filter=True order by A.name;
     ''')
@@ -21,7 +21,7 @@ def get_3dw_img_info(label):
 def get_grabcad_img_info(label):
     return read(f'''
         select A.id, A.image, A.name from
-            (SELECT gm.id, name, image, split_part(file, '/', 5) as label, filter from grabcad_models as gm
+            (SELECT gm.id, name, image, split_part(file, '/', 6) as label, filter from grabcad_models as gm
             right join (select cadid, max(file) as file from grabcad_files group by cadid) gf on gm.id = gf.cadid
             ) as A
         where A.label='{label}' and A.filter=True order by A.name;
@@ -66,24 +66,23 @@ def index():
 def stat():
     df = read(
         """
-        select dw.label, dw.dw_obj, obj, prt, sldprt, dw_obj + obj + prt + sldprt as total from
-        (
+        select grabcad.label, coalesce(dw_obj, 0) as dw_obj, obj, prt, sldprt, coalesce(dw_obj, 0) + obj + prt + sldprt as total 
+        from (
             select label, count(*) as dw_obj
             from (
-                     select split_part(path, '/', 5) as label
+                     select split_part(path, '/', 6) as label
                      from dw_files
                      where filter = True
                  ) as A
             group by label
         ) as dw
-        JOIN
-        (
+        full outer join (
             select label,
                    SUM(CASE WHEN LOWER(file) like '%%.obj' THEN 1 ELSE 0 END)    as obj,
                    SUM(CASE WHEN LOWER(file) like '%%.prt' THEN 1 ELSE 0 END)    as prt,
                    SUM(CASE WHEN LOWER(file) like '%%.sldprt' THEN 1 ELSE 0 END) as sldprt
             from (
-                     SELECT file, split_part(file, '/', 5) as label
+                     SELECT file, split_part(file, '/', 6) as label
                      from grabcad_models as gm
                               right join grabcad_files as gf
                                          on gm.id = gf.cadid
@@ -111,4 +110,3 @@ def remove_item():
     if data['ids']:
         filter_data(data['cad-type'], data['ids'])
     return "success"
-

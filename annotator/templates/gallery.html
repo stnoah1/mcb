@@ -356,20 +356,27 @@
             display: block !important;
         }
 
+        footer {
+            padding: 5px 20px;
+            background: #333;
+            color: white;
+            text-align: right;
+        }
+
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
     <a href="/">Home</a>
-    <a href="/">Annotator</a>
+    <a href="/">Scrapper</a>
     <a href="/stats">Statistic</a>
 </div>
 
 <form action="/gallery" method="get" class="navbar">
     <span style="font-size:30px;cursor:pointer;float:left;" onclick="toggleNav()">&#9776;</span>
 
-    <div style="width:10%;float:left;font-size:30px;padding:0 40px;color:white; ">Annotator</div>
+    <div style="width:10%;float:left;font-size:30px;padding:0 40px;color:white; ">Scrapper</div>
 
     <div class="custom-select" style="width:10%;">
         <select id="cad" name="cad" style="z-index: 99">
@@ -407,6 +414,9 @@
     </div>
 </div>
 
+<footer>
+    <p>© Hyung-gun Chi. All rights reserved. E-mail: <a href="mailto:chi45@purdue.edu">chi45@purdue.edu</a></p>
+</footer>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
 <script>
