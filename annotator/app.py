@@ -112,6 +112,3 @@ def remove_item():
         filter_data(data['cad-type'], data['ids'])
     return "success"
 
-
-if __name__ == "__main__":
-    app.run(host='128.46.190.203', debug=True)
