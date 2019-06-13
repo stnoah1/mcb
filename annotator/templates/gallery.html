@@ -30,24 +30,19 @@
 
     <div class="custom-select" style="width:10%;">
         <select id="cad" name="cad" style="z-index: 99">
-            <option value="" selected>CAD</option>
-            <option value="grabCAD">grabCAD</option>
-            <option value="3DW">3DW</option>
+            <option value="">CAD</option>
+            <option value=0 selected>All</option>
+            <option value=1>ME444</option>
+            <option value=2>3DW</option>
+            <option value=3>grabCAD</option>
         </select>
     </div>
     <div class="custom-select" style="width:10%;">
         <select id="keyword" name="keyword" style="z-index:99">
-            <option value="" selected>KEYWORD</option>f
+            <option value="" selected>KEYWORD</option>
             {% for keyword in keywords %}
             <option value={{keyword}}>{{keyword.upper()}}</option>
             {% endfor %}
-        </select>
-    </div>
-    <div class="custom-select" style="width:10%;">
-        <select id="display" name="display" style="z-index:99">
-            <option value="">Display</option>
-            <option value="filtered" selected>Filtered</option>
-            <option value="deleted">Deleted</option>
         </select>
     </div>
     <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
@@ -61,11 +56,11 @@
         {% for idx, rows in img_info.iterrows() %}
         <div class="item nopad" style="max-width:290px" id={{rows['id']}}>
             <label class="image-checkbox">
-                <img class="img-responsive" src="{{rows['image']}}" data-src="{{rows['image']}}" alt="{{rows['id']}}">
+                <img class="img-responsive" src="/image/{{rows['id']}}" data-src="/image/{{rows['id']}}" alt="{{rows['id']}}">
                 <input type="checkbox" name="image" value={{rows['id']}}>
                 <i class="fa fa-check hidden"></i>
                 <div class="over">{{rows['name']}}
-                    <button id="view" onclick="openView('{{rows["image"]}}')">3D View</button>
+                    <button id="view" onclick="openView('{{rows["id"]}}')">3D View</button>
                 </div>
             </label>
         </div>
@@ -115,7 +110,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const cad = urlParams.get('cad');
     const keyword = urlParams.get('keyword');
-    const display = urlParams.get('display');
 
     cad_selection = document.getElementById('cad');
     try {
@@ -129,19 +123,6 @@
         keyword_selection.selectedIndex = keyword_selection.querySelector('option[value="' + keyword + '"]').index;
     } catch (err) {
         keyword_selection.selectedIndex = 0;
-    }
-
-    display_selection = document.getElementById('display');
-    try {
-        display_selection.selectedIndex = display_selection.querySelector('option[value="' + display + '"]').index;
-    } catch (err) {
-        display_selection.selectedIndex = display_selection.querySelector('option[value="filtered"]').index;
-    }
-
-    if (display === 'deleted') {
-        console.log(document.getElementById('delete'));
-        document.getElementById('delete').value = 'RESTORE';
-        document.getElementById('delete').innerText = 'RESTORE';
     }
 
     var x, i, j, selElmnt, a, b, c, ul;

@@ -36,6 +36,6 @@ def search_keywords_db():
 
 
 if __name__ == "__main__":
-    for keyword in ['stud', 'anchor', 'insert', 'plug', 'brake', 'clutch', 'coupling', 'actuator', 'ball', 'slide',
+    for keyword in ['plug', 'brake', 'clutch', 'coupling', 'actuator', 'ball', 'slide',
                     'stock', 'shaft', 'sleeve', 'castor', 'handle', 'gasket', 'piston', 'wiper', 'damper']:
         search(keyword, websites=['3dw', 'grabcad'])

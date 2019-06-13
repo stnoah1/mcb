@@ -9,16 +9,26 @@ select_image_3dw = '''
 '''
 
 select_image_grabcad = '''
-        select gf.id, concat('/image/grabCAD/{label}/', split_part(replace(file, '.obj', '.png'), '/', 7)) as image, name from grabcad_files as gf
-        left join grabcad_models as gm
-        on gf.cadid = gm.id
-        where split_part(file, '/', 6) = '{label}' and gf.filter={filter} and file like '%%.obj';
+    select gf.id, concat('/image/grabCAD/{label}/', split_part(replace(file, '.obj', '.png'), '/', 7)) as image, name from grabcad_files as gf
+    left join grabcad_models as gm
+    on gf.cadid = gm.id
+    where split_part(file, '/', 6) = '{label}' and gf.filter={filter} and file like '%%.obj';
+'''
+
+select_images = '''
+    select id, 
+        name 
+    from cad_file 
+    where lower(label) = '{label}' and file like '%%.obj' {cad_type};
 '''
 
 update_filter = '''
-    update {table} set filter={filter} where id='{id}';
+    update cad_file set label='' where id='{id}';
 '''
 
+select_object_by_id = '''
+    select * from cad_file where id='{id}';
+'''
 stats = '''
     select CASE WHEN grabcad.label is null THEN dw.label ELSE grabcad.label END,
            coalesce(dw_obj, 0) as dw_obj,

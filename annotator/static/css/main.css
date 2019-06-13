@@ -245,6 +245,7 @@ li {
 .main {
     padding: 16px;
     margin-top: 50px;
+    margin-bottom: 30px;
     position: relative;
     transition: margin-left .5s;
 }

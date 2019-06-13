@@ -1,6 +1,5 @@
-    function openView(url) {
-        url = url.replace('/image/', '/zip/').replace('.png', '.zip');
-        window.open('OBJViewer?fileURL=' + url);
+    function openView(id) {
+        window.open('OBJViewer?fileURL=/zip/' + id);
     }
 
     function toggleNav() {
@@ -52,9 +51,7 @@
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({
             "keyword": keyword,
-            "cad-type": cad,
             "ids": checkedBoxes,
-            "action": display
         }));
         for (i = 0; i < checkedBoxes.length; i++) {
             removeElement(checkedBoxes[i]);

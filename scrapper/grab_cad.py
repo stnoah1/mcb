@@ -97,16 +97,22 @@ def insert_search_log(keyword, total, softwares):
                      })
 
 
-def insert_grabcad_model(model_name, cadid, image):
-    return db.insert('grabcad_models', ignore=True, **{'name': model_name, 'id': cadid, 'image': image})
-
-
-def insert_grabcad_file(cadid, filepath):
-    return db.insert('grabcad_files', ignore=True, **{'cadid': cadid, 'file': filter_escape_char(filepath)})
+def insert_grabcad_file(cadid, filepath, model_name, image, keyword):
+    filepath = filter_escape_char(filepath)
+    payload = {
+        'name': model_name,
+        'source_id': cadid,
+        'file': filepath,
+        'web_image': image,
+        'source': 3,
+        'image': filepath.replace('/grabCAD/', '/image/grabCAD/').replace('.obj', '.png'),
+        'label': keyword
+    }
+    return db.insert('cad_file', ignore=True, **payload)
 
 
 def is_model(cadid):
-    return not db.read(f"SELECT * from grabcad_files WHERE cadid='{cadid}'").empty
+    return not db.read(f"SELECT * from cad_file WHERE source = 3 and source_id='{cadid}'").empty
 
 
 def run(keyword, softwares=None):
@@ -137,8 +143,6 @@ def run(keyword, softwares=None):
             if is_model(cadid):
                 continue
 
-            insert_grabcad_model(model_name, cadid, model_image)
-
             # unzip model
             zip_file = download_zipfile(cadid, output_dir)
             unzipped_dir = unzip_file(zip_file)
@@ -153,7 +157,7 @@ def run(keyword, softwares=None):
             for file in files:
                 moved_file = move_file(join(unzipped_dir, file), output_dir)
                 obj_file = convert_to_obj(moved_file)
-                insert_grabcad_file(cadid, obj_file)
+                insert_grabcad_file(cadid, obj_file, model_name, model_image, keyword)
 
             # remove unzipped directory
             shutil.rmtree(unzipped_dir)

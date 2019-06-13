@@ -200,3 +200,5 @@ config.py
 
 3DW
 *.tmp
+
+script.py

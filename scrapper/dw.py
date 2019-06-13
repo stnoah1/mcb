@@ -57,16 +57,25 @@ def filter_files(unzipped_dir):
 
 
 def is_model(cadid):
-    return not db.read(f"SELECT * from dw_files WHERE id='{cadid}'").empty
+    return not db.read(f"SELECT * from cad_file WHERE source=2 and source_id='{cadid}'").empty
 
 
 def insert_search_log(keyword, total):
     return db.insert('search_log', **{'keyword': keyword, 'website': '3DW', 'total': total})
 
 
-def insert_model(id, name, image, path):
-    return db.insert('dw_files', ignore=True,
-                     **{'id': id, 'name': name, 'image': image, 'path': filter_escape_char(path)})
+def insert_dw_file(id, name, image, filepath, keyword):
+    filepath = filter_escape_char(filepath)
+    payload = {
+        'name': name,
+        'source_id': id,
+        'file': filepath,
+        'web_image': image,
+        'source': 3,
+        'image': filepath.replace('/3DW/', '/image/3DW/').replace('.obj', '.png'),
+        'label': keyword,
+    }
+    return db.insert('cad_file', ignore=True, **payload)
 
 
 def update_thumbnail():
@@ -112,7 +121,7 @@ def run(keyword, title_matching=False):
                     # else:
                     image = item['binaries']['bot_lt']['contentUrl']
 
-                    insert_model(id, name, image, obj_file)
+                    insert_dw_file(id, name, image, obj_file, keyword)
 
                 shutil.rmtree(unzipped_dir)
 

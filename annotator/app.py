@@ -1,8 +1,7 @@
-import time
-from zipfile import ZipFile
 import json
 import os
 from pprint import pprint
+from zipfile import ZipFile
 
 import pandas as pd
 from flask import Flask, request, render_template, send_from_directory, after_this_request
@@ -15,43 +14,25 @@ from utils import get_keywords
 app = Flask(__name__)
 
 
-def get_3dw_img(label, filter):
-    return read(queries.select_image_3dw.format(label=label, filter=filter))
+def get_cad_imgs(label, cad_type):
+    return read(queries.select_images.format(label=label, cad_type=cad_type))
 
 
-def get_grabcad_img(label, filter):
-    return read(queries.select_image_3dw.format(label=label, filter=filter))
-
-
-def filter_data(cad_type, ids, filter):
-    table = {
-        '3DW': 'dw_files',
-        'grabCAD': 'grabcad_files',
-    }
+def filter_data(ids):
     for id in ids:
-        query(queries.update_filter.format(table=table[cad_type], filter=filter, id=id))
+        query(queries.update_filter.format(id=id))
 
 
 @app.route("/gallery", methods=["GET"])
 def gallery():
     cad_type = request.args.get('cad', '')
+    if cad_type == '0':
+        condition = ''
+    else:
+        condition = f'and source = {cad_type}'
     keyword = request.args.get('keyword', '')
-    display = request.args.get('display', '')
 
-    if display == 'filtered':
-        filter = True
-    elif display == 'deleted':
-        filter = False
-    else:
-        raise ValueError
-
-    if cad_type == "grabCAD":
-        img_info = get_grabcad_img(keyword, filter)
-    elif cad_type == "3DW":
-        img_info = get_3dw_img(keyword, filter)
-    else:
-        raise ValueError
-
+    img_info = get_cad_imgs(keyword, condition)
     print(f'{len(img_info)} was found!!')
     return render_template('gallery.html', img_info=img_info, keywords=get_keywords())
 
@@ -80,27 +61,23 @@ def remove_item():
     payload = json.loads(request.data)
     pprint(payload)
     if payload['ids']:
-        if payload['action'] == 'deleted':
-            action = True
-        else:
-            action = False
-        filter_data(payload['cad-type'], payload['ids'], action)
+        filter_data(payload['ids'])
     return "success"
 
 
-@app.route('/obj/<cad_site>/<category>/<filename>')
-def get_obj(cad_site, category, filename):
-    obj_path = os.path.join(data_path, cad_site, category)
-    return send_from_directory(obj_path, filename)
+@app.route('/obj/<id>')
+def get_obj(id):
+    obj_path = read(queries.select_object_by_id.format(id=id))['file'][0]
+    return send_from_directory(os.path.dirname(obj_path), os.path.basename(obj_path))
 
 
-@app.route('/zip/<cad_site>/<category>/<filename>')
-def get_zip(cad_site, category, filename):
-    zip_dir = os.path.join(data_path, cad_site, category)
-    zip_path = os.path.join(zip_dir, filename)
+@app.route('/zip/<id>')
+def get_zip(id):
+    obj_path = read(queries.select_object_by_id.format(id=id))['file'][0]
+    zip_path = obj_path.replace('.obj', 'zip')
 
     with ZipFile(zip_path, 'w') as zip:
-        zip.write(zip_path.replace('.zip', '.obj'))
+        zip.write(obj_path)
 
     @after_this_request
     def remove_zipfile(response):
@@ -110,13 +87,13 @@ def get_zip(cad_site, category, filename):
             print(e)
         return response
 
-    return send_from_directory(zip_dir, filename)
+    return send_from_directory(os.path.dirname(zip_path), os.path.basename(zip_path))
 
 
-@app.route('/image/<cad_site>/<category>/<filename>')
-def get_img(cad_site, category, filename):
-    img_path = os.path.join(data_path, 'image', cad_site, category)
-    return send_from_directory(img_path, filename)
+@app.route('/image/<id>')
+def get_img(id):
+    img_path = read(queries.select_object_by_id.format(id=id))['image'][0]
+    return send_from_directory(os.path.dirname(img_path), os.path.basename(img_path))
 
 
 @app.route("/OBJViewer")
