@@ -11,359 +11,7 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
     <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <style>
-        .custom-select {
-            position: relative;
-            float: left;
-            font-family: Arial, serif;
-        }
-
-        .submit {
-            position: relative;
-            float: left;
-            color: #fff;
-            background: #328efd;
-            border: none;
-            padding: 8px 16px;
-            text-decoration: none;
-            cursor: pointer;
-            height: 37px;
-        }
-
-        .custom-select select {
-            display: none; /*hide original SELECT element:*/
-        }
-
-        .select-selected {
-            background-color: Black;
-        }
-
-        /*style the arrow inside the select element:*/
-        .select-selected:after {
-            position: absolute;
-            content: "";
-            top: 14px;
-            right: 10px;
-            width: 0;
-            height: 0;
-            border: 6px solid transparent;
-            border-color: #fff transparent transparent transparent;
-        }
-
-        /*point the arrow upwards when the select box is open (active):*/
-        .select-selected.select-arrow-active:after {
-            border-color: transparent transparent #fff transparent;
-            top: 7px;
-        }
-
-        /*style the items (options), including the selected item:*/
-        .select-items li, .select-selected {
-            color: #ffffff;
-            padding: 8px 16px;
-            border: 1px solid transparent;
-            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-            cursor: pointer;
-            user-select: none;
-            z-index: 0;
-
-        }
-
-        /*hide the items when the select box is closed:*/
-        .select-hide {
-            display: none;
-        }
-
-        .select-items li:hover, .same-as-selected {
-            background-color: rgba(50, 50, 50, 1);
-        }
-
-        body {
-            margin: 0px;
-            padding: 0;
-            border: 0;
-            min-width: 320px;
-            color: #777;
-        }
-
-        html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 1.02em;
-        }
-
-        p, td {
-            line-height: 1.5;
-        }
-
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            vertical-align: top;
-            font-size: .9em;
-            font-weight: normal;
-            border-right: 1px solid #fff;
-        }
-
-        td:first-child {
-            white-space: nowrap;
-            color: #008000;
-            width: 1%;
-            font-style: italic;
-        }
-
-        h1, h2, h3 {
-            color: #4b4b4b;
-            font-family: "Source Sans Pro", sans-serif;
-            font-weight: 300;
-            margin: 0 0 1.2em;
-        }
-
-        h1 {
-            font-size: 4.5em;
-            color: #1f8dd6;
-            margin: 0 0 .4em;
-        }
-
-        h2 {
-            font-size: 2em;
-            color: #636363;
-        }
-
-        h3 {
-            font-size: 1.8em;
-            color: #4b4b4b;
-            margin: 1.8em 0 .8em
-        }
-
-        h4 {
-            font: bold 1em sans-serif;
-            color: #636363;
-            margin: 4em 0 1em;
-        }
-
-        a {
-            color: #4e99c7;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        p, pre {
-            margin: 0 0 1.2em;
-        }
-
-        ::selection {
-            color: #fff;
-            background: #328efd;
-        }
-
-        ::-moz-selection {
-            color: #fff;
-            background: #328efd;
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 3em;
-            }
-
-            h2 {
-                font-size: 1.8em;
-            }
-
-            h3 {
-                font-size: 1.5em;
-            }
-
-            td:first-child {
-                white-space: normal;
-            }
-        }
-
-        .inline-code {
-            padding: 1px 5px;
-            background: #eee;
-            border-radius: 2px;
-        }
-
-        pre {
-            padding: 15px 10px;
-            font-size: .9em;
-            color: #555;
-            background: #edf3f8;
-        }
-
-        pre i {
-            color: #aaa;
-        }
-
-        /* comments */
-        pre b {
-            font-weight: normal;
-            color: #cf4b25;
-        }
-
-        /* strings */
-        pre em {
-            color: #0c59e9;
-        }
-
-        /* numeric */
-
-        /* Pure CSS */
-        .pure-button {
-            margin: 5px 0;
-            text-decoration: none !important;
-        }
-
-        .button-lg {
-            margin: 5px 0;
-            padding: .65em 1.6em;
-            font-size: 105%;
-        }
-
-        ul {
-            max-height: 470px;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            padding: 0;
-            margin-block-start: 0;
-            margin-block-end: 1em;
-        }
-
-
-        li {
-            list-style-type: None;
-            font-size: 16px;
-            color: #fff;
-            background: black;
-        }
-
-
-        #image .over {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 4px 6px;
-            font-size: 13px;
-            color: #fff;
-            background: #222;
-            background: rgba(0, 0, 0, .7);
-        }
-
-
-        .main {
-            padding: 16px;
-            margin-top: 50px;
-            position: relative;
-            transition: margin-left .5s;
-        }
-
-        .navbar {
-            background-color: #333;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10;
-            height: 40px;
-            padding: 10px;
-        }
-
-        .nopad {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-
-        /*image gallery*/
-        .image-checkbox {
-            cursor: pointer;
-            box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            -webkit-box-sizing: border-box;
-            /*border: 100px solid transparent;*/
-            /*margin-bottom: 0;*/
-            outline: 0;
-        }
-
-        .sidenav {
-            height: 100%; /* 100% Full-height */
-            width: 0; /* 0 width - change this with JavaScript */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Stay on top */
-            top: 0;
-            left: 0;
-            background-color: #111; /* Black*/
-            overflow-x: hidden; /* Disable horizontal scroll */
-            padding-top: 60px; /* Place content 60px from the top */
-            transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-            margin-top: 30px;
-        }
-
-        /* The navigation menu links */
-        .sidenav a {
-            padding: 8px 8px 8px 32px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
-            display: block;
-            transition: 0.3s;
-        }
-
-        /* When you mouse over the navigation links, change their color */
-        .sidenav a:hover {
-            color: #f1f1f1;
-        }
-
-        /* Position and style the close button (top right corner) */
-        .sidenav .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-        }
-
-
-        /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-        @media screen and (max-height: 450px) {
-            .sidenav {
-                padding-top: 15px;
-            }
-
-            .sidenav a {
-                font-size: 18px;
-            }
-        }
-
-        .image-checkbox-checked {
-            border-color: Red;
-        }
-
-        .image-checkbox .fa {
-            position: absolute;
-            color: white;
-            background-color: Red;
-            padding: 10px;
-            top: 0;
-            right: 0;
-        }
-
-        .image-checkbox-checked .fa {
-            display: block !important;
-        }
-
-        footer {
-            padding: 5px 20px;
-            background: #333;
-            color: white;
-            text-align: right;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
 </head>
 <body>
@@ -371,6 +19,8 @@
     <a href="/">Home</a>
     <a href="/">Scrapper</a>
     <a href="/stats">Statistic</a>
+    <a href="/annotator">Annotator</a>
+    <a href="/viewer">Viewer</a>
 </div>
 
 <form action="/gallery" method="get" class="navbar">
@@ -387,27 +37,36 @@
     </div>
     <div class="custom-select" style="width:10%;">
         <select id="keyword" name="keyword" style="z-index:99">
-            <option value="" selected>KEYWORD</option>
+            <option value="" selected>KEYWORD</option>f
             {% for keyword in keywords %}
             <option value={{keyword}}>{{keyword.upper()}}</option>
             {% endfor %}
         </select>
     </div>
+    <div class="custom-select" style="width:10%;">
+        <select id="display" name="display" style="z-index:99">
+            <option value="">Display</option>
+            <option value="filtered" selected>Filtered</option>
+            <option value="deleted">Deleted</option>
+        </select>
+    </div>
     <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
-    <button type="button" class="submit" onclick="removeItem(); return false;"
-            style="width:10%;float:right;margin-right: 20px">FILTER
+    <button id="delete" type="button" class="submit" onclick="changeItem(); return false;"
+            style="width:10%;float:right;margin-right: 20px">DELETE
     </button>
 </form>
 
 <div class="main" id="main">
     <div id="image" class="flex-images">
         {% for idx, rows in img_info.iterrows() %}
-        <div class="item nopad" style="max-width:32%;" id={{rows['id']}}>
+        <div class="item nopad" style="max-width:290px" id={{rows['id']}}>
             <label class="image-checkbox">
-                <img class="img-responsive" src={{rows['image']}} data-src={{rows['image']}} alt="">
+                <img class="img-responsive" src="{{rows['image']}}" data-src="{{rows['image']}}" alt="{{rows['id']}}">
                 <input type="checkbox" name="image" value={{rows['id']}}>
                 <i class="fa fa-check hidden"></i>
-                <div class="over">{{rows['name']}}</div>
+                <div class="over">{{rows['name']}}
+                    <button id="view" onclick="openView('{{rows["image"]}}')">3D View</button>
+                </div>
             </label>
         </div>
         {% endfor %}
@@ -419,6 +78,8 @@
 </footer>
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 <script>
     $('#image').flexImages({truncate: 1});
 
@@ -454,6 +115,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const cad = urlParams.get('cad');
     const keyword = urlParams.get('keyword');
+    const display = urlParams.get('display');
 
     cad_selection = document.getElementById('cad');
     try {
@@ -469,60 +131,17 @@
         keyword_selection.selectedIndex = 0;
     }
 
-    function toggleNav() {
-        console.log(document.getElementById("mySidenav").style.width);
-        if (document.getElementById("mySidenav").style.width !== "0px") {
-            closeNav()
-        } else {
-            openNav()
-        }
+    display_selection = document.getElementById('display');
+    try {
+        display_selection.selectedIndex = display_selection.querySelector('option[value="' + display + '"]').index;
+    } catch (err) {
+        display_selection.selectedIndex = display_selection.querySelector('option[value="filtered"]').index;
     }
 
-    function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-    }
-
-    function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft = "0";
-    }
-
-    function removeElement(elementId) {
-        // Removes an element from the document
-        var element = document.getElementById(elementId);
-        element.parentNode.removeChild(element);
-    }
-
-    function getCheckedBoxes(chkboxName) {
-        var checkboxes = document.getElementsByName(chkboxName);
-        var checkboxesChecked = [];
-        // loop over them all
-        for (var i = 0; i < checkboxes.length; i++) {
-            // And stick the checked ones onto an array...
-            if (checkboxes[i].checked) {
-                checkboxesChecked.push(checkboxes[i].value);
-            }
-        }
-        // Return the array if it is non-empty, or null
-        return checkboxesChecked.length > 0 ? checkboxesChecked : null;
-    }
-
-    // Call as
-
-    function removeItem() {
-        var xhr = new XMLHttpRequest();
-        var checkedBoxes = getCheckedBoxes("image");
-
-        xhr.open("POST", "/filter", true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-            "cad-type": cad,
-            "ids": checkedBoxes,
-        }));
-        for (i = 0; i < checkedBoxes.length; i++) {
-            removeElement(checkedBoxes[i]);
-        }
+    if (display === 'deleted') {
+        console.log(document.getElementById('delete'));
+        document.getElementById('delete').value = 'RESTORE';
+        document.getElementById('delete').innerText = 'RESTORE';
     }
 
     var x, i, j, selElmnt, a, b, c, ul;

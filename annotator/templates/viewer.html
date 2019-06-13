@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+<div class="navbar">
+    <span style="font-size:30px;cursor:pointer;float:left;" onclick="toggleNav()">&#9776;</span>
+    <div style="width:200px;float:left;font-size:30px;padding:0 40px;color:white; ">3D Viewer</div>
+</div>
+
+<div id="mySidenav" class="sidenav">
+    <a href="/">Home</a>
+    <a href="/">Scrapper</a>
+    <a href="/stats">Statistic</a>
+    <a href="/annotator">Annotator</a>
+    <a href="/viewer">Viewer</a>
+</div>
+<div class="main" id="main">
+    <iframe src="/OBJViewer" style="width:100%;height:885px"></iframe>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

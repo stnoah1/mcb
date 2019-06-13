@@ -3,6 +3,7 @@ scipy
 numpy
 sqlalchemy
 sshtunnel
+pyopenssl
 Flask
 pandas
 psycopg2

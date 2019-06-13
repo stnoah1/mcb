@@ -18,7 +18,7 @@ for i=inds
   modelname = files(i).name
   modelname_ = strsplit(modelname,'.');
   imname = modelname_{1};
-  if exist([imdirpath '/' imname '_' num2str(20,'%03d') '.png']) > 0
+  if exist([imdirpath '/' imname '.png']) > 0
     continue
   end
   try

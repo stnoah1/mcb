@@ -9,8 +9,9 @@ from tqdm import tqdm
 
 import db
 from config import grabcad_path
+from create_img import create_image
 from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
-from utils import make_dir
+from utils import make_dir, clean_dir
 
 grapcad_url = 'https://grabcad.com'
 api_url = f'{grapcad_url}/community/api/v1/models'
@@ -159,3 +160,6 @@ def run(keyword, softwares=None):
 
         except Exception as e:
             logging.error(f'[{keyword}]:{e}')
+
+    clean_dir(output_dir)
+    create_image(output_dir)

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Annotator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        /* The container must be positioned relative: */
+        .custom-select {
+            position: relative;
+            font-family: Arial;
+        }
+
+        .custom-select select {
+            display: none; /*hide original SELECT element: */
+        }
+
+        .select-selected {
+            background-color: DodgerBlue;
+        }
+
+        /* Style the arrow inside the select element: */
+        .select-selected:after {
+            position: absolute;
+            content: "";
+            top: 14px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #fff transparent transparent transparent;
+        }
+
+        /* Point the arrow upwards when the select box is open (active): */
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #fff transparent;
+            top: 7px;
+        }
+
+        /* style the items (options), including the selected item: */
+        .select-items div, .select-selected {
+            color: #ffffff;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+            cursor: pointer;
+        }
+
+        /* Style items (options): */
+        .select-items {
+            position: absolute;
+            background-color: DodgerBlue;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+
+        /* Hide the items when the select box is closed: */
+        .select-hide {
+            display: none;
+        }
+
+        .select-items div:hover, .same-as-selected {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <span style="font-size:30px;cursor:pointer;float:left;" onclick="toggleNav()">&#9776;</span>
+    <div style="width:200px;float:left;font-size:30px;padding:0 40px;color:white; ">Annotator</div>
+</div>
+
+<div id="mySidenav" class="sidenav">
+    <a href="/">Home</a>
+    <a href="/">Scrapper</a>
+    <a href="/stats">Statistic</a>
+    <a href="/annotator">Annotator</a>
+    <a href="/viewer">Viewer</a>
+</div>
+
+<div class="main" id="main" style="text-align:right">
+    <iframe src="/OBJViewer" style="width:46%;height:750px;margin:20px;"></iframe>
+    <select multiple style="width:46%;height:750px;margin:20px">
+        {% for label in labels %}
+        <option value={{label}}>{{label.upper()}}</option>
+        {% endfor %}
+    </select>
+</div>
+<footer>
+    <p>© Hyung-gun Chi. All rights reserved. E-mail: <a href="mailto:chi45@purdue.edu">chi45@purdue.edu</a></p>
+</footer>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

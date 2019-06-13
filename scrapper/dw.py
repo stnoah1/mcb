@@ -8,7 +8,8 @@ import wget
 from tqdm import tqdm
 
 import db
-from utils import make_dir
+from create_img import create_image
+from utils import make_dir, clean_dir
 from config import dw_path
 from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
 
@@ -72,13 +73,16 @@ def update_thumbnail():
     db.read('select * from ')
 
 
-def run(keyword):
+def run(keyword, title_matching=False):
     per_search = 100
     init_results = search(keyword, per_search, offset=0)
     total = init_results['total']
     total_search = total // per_search
     insert_search_log(keyword, total)
     print(f'{total} models found')
+
+    output_dir = f'{dw_path}/{keyword}'
+    make_dir(output_dir)
 
     for i in range(total_search + 1):
         results = search(keyword, per_search, offset=i * per_search)
@@ -90,11 +94,8 @@ def run(keyword):
                 if is_model(id):
                     continue
 
-                if keyword not in item['title'].lower():
+                if title_matching and keyword not in item['title'].lower():
                     continue
-
-                output_dir = f'{dw_path}/{keyword}'
-                make_dir(output_dir)
 
                 zip_file = download(output_dir, item)
                 if not zip_file:
@@ -117,3 +118,6 @@ def run(keyword):
 
             except Exception as e:
                 logging.error(f'[{keyword}]:{e}')
+
+    clean_dir(output_dir)
+    create_image(output_dir)
