@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sshtunnel import SSHTunnelForwarder
 
-from config import host, ssh_username, ssh_private_key, localhost, ssh_password, user, password, database, ssh_tunnel
+from config import ssh_host, ssh_username, ssh_private_key, localhost, ssh_password, user, password, database, ssh_tunnel
 
 
 class DBConn:
@@ -11,7 +11,7 @@ class DBConn:
 
         if ssh_tunnel:
             self.server = SSHTunnelForwarder(
-                (host, 22),
+                (ssh_host, 22),
                 ssh_username=ssh_username,
                 ssh_private_key=ssh_private_key,
                 remote_bind_address=(localhost, self.port),
@@ -47,8 +47,15 @@ class DBConn:
         else:
             return None
 
-    def raw_query(self, q):
-        self.engine.execute(q)
+    def raw_query(self, q, multi=False):
+        self.engine.execute(q, multi=multi)
+
+    def delete(self, table, **params):
+        condition = "AND".join(f"{key} = {value}" for key, value in params.items())
+        self.engine.execute(
+            f'DELETE FROM {table} '
+            f'WHERE {condition};'
+        )
 
     def __exit__(self, type, value, traceback):
         self.engine.dispose()
@@ -73,4 +80,14 @@ def insert(table, **params):
 
 def query(q):
     with DBConn() as conn:
-        return conn.raw_query(q)
+        conn.raw_query(q)
+
+
+def multi_query(q):
+    with DBConn() as conn:
+        conn.raw_query(q, multi=True)
+
+
+def delete(table, **params):
+    with DBConn() as conn:
+        conn.delete(table, **params)
