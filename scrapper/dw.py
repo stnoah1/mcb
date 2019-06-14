@@ -65,6 +65,9 @@ def insert_search_log(keyword, total):
 
 
 def insert_dw_file(id, name, image, filepath, keyword):
+    if not os.path.isfile(filepath):
+        raise FileNotFoundError
+
     filepath = filter_escape_char(filepath)
     payload = {
         'name': name,
@@ -74,6 +77,7 @@ def insert_dw_file(id, name, image, filepath, keyword):
         'source': 3,
         'image': filepath.replace('/3DW/', '/image/3DW/').replace('.obj', '.png'),
         'label': keyword,
+        'file_size': os.path.getsize(filepath)
     }
     return db.insert('cad_file', ignore=True, **payload)
 

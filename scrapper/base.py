@@ -33,7 +33,7 @@ def move_file(file, dst_dir):
     count = 0
     while os.path.exists(dst_file):
         count += 1
-        dst_file = os.path.join(dst_dir, '%s-%d%s' % (head, count, tail))
+        dst_file = os.path.join(dst_dir, '%s_%d%s' % (head, count, tail))
 
     shutil.move(file, dst_file)
     return dst_file

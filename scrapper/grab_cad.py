@@ -98,6 +98,9 @@ def insert_search_log(keyword, total, softwares):
 
 
 def insert_grabcad_file(cadid, filepath, model_name, image, keyword):
+    if not os.path.isfile(filepath):
+        raise FileNotFoundError
+
     filepath = filter_escape_char(filepath)
     payload = {
         'name': model_name,
@@ -106,7 +109,9 @@ def insert_grabcad_file(cadid, filepath, model_name, image, keyword):
         'web_image': image,
         'source': 3,
         'image': filepath.replace('/grabCAD/', '/image/grabCAD/').replace('.obj', '.png'),
-        'label': keyword
+        'label': keyword,
+        'file_size': os.path.getsize(filepath)
+
     }
     return db.insert('cad_file', ignore=True, **payload)
 
