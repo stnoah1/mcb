@@ -41,14 +41,18 @@
         <select id="keyword" name="keyword" style="z-index:99">
             <option value="" selected>KEYWORD</option>
             {% for keyword in keywords %}
-            <option value={{keyword}}>{{keyword.upper()}}</option>
+            <option value="{{keyword}}">{{keyword.upper()}}</option>
             {% endfor %}
         </select>
     </div>
+
     <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
     <button id="delete" type="button" class="submit" onclick="changeItem(); return false;"
             style="width:10%;float:right;margin-right: 20px">DELETE
     </button>
+    <div  style="width:10%;float:left;color:white;margin-left: 80px;margin-top: 10px;font-size: 20px;font-family: Arial,serif;">
+        <span>{{img_info|length}} models found</span>
+    </div>
 </form>
 
 <div class="main" id="main">

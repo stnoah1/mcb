@@ -29,6 +29,7 @@ update_filter = '''
 select_object_by_id = '''
     select * from cad_file where id='{id}';
 '''
+
 stats = '''
     select CASE WHEN grabcad.label is null THEN dw.label ELSE grabcad.label END,
            coalesce(dw_obj, 0) as dw_obj,
@@ -63,4 +64,8 @@ stats = '''
         group by label
     ) as grabcad
     on dw.label = grabcad.label;
+'''
+
+stats_new = '''
+
 '''

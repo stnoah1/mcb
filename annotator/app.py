@@ -7,7 +7,6 @@ import pandas as pd
 from flask import Flask, request, render_template, send_from_directory, after_this_request
 
 import queries
-from config import data_path
 from db import read, query
 from utils import get_keywords
 
@@ -31,7 +30,6 @@ def gallery():
     else:
         condition = f'and source = {cad_type}'
     keyword = request.args.get('keyword', '')
-
     img_info = get_cad_imgs(keyword, condition)
     print(f'{len(img_info)} was found!!')
     return render_template('gallery.html', img_info=img_info, keywords=get_keywords())
@@ -52,8 +50,8 @@ def stat():
                         margins=True,
                         margins_name='=== TOTAL ===',  # defaults to 'All'
                         aggfunc=sum)
-    columns = ['DW_OBJ', 'GRABCAD_OBJ', 'PRT', 'SLDPRT', 'FILTERED', 'DELETED']
-    return render_template('stats.html', tables=[df[columns].to_html(table_id='stats', classes='data', header="true")])
+    df = df.sort_values(by=['TOTAL'], ascending=False)
+    return render_template('stats.html', tables=[df.to_html(table_id='stats', classes='data', header="true")])
 
 
 @app.route("/filter", methods=["POST"])
