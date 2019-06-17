@@ -3,8 +3,6 @@
 <head>
     <meta charset="utf-8">
     <title>HG annotator</title>
-    <meta name="description"
-          content="A lightweight jQuery plugin for creating fluid galleries as seen on Flickr and Google Images.">
     <link rel="shortcut icon" href="https://hyung-gun.me/images/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
@@ -14,12 +12,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
 </head>
+
 <body>
+
 <div id="mySidenav" class="sidenav">
     <a href="/">Home</a>
     <a href="/">Scrapper</a>
     <a href="/stats">Statistic</a>
-    <a href="/annotator">Annotator</a>
     <a href="/viewer">Viewer</a>
 </div>
 
@@ -43,16 +42,34 @@
             {% for keyword in keywords %}
             <option value="{{keyword}}">{{keyword.upper()}}</option>
             {% endfor %}
+            <option value="">UNLABELED</option>
+            <option value="miscellaneous">DELETED</option>
         </select>
     </div>
 
     <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
-    <button id="delete" type="button" class="submit" onclick="changeItem(); return false;"
-            style="width:10%;float:right;margin-right: 20px">DELETE
-    </button>
-    <div  style="width:10%;float:left;color:white;margin-left: 80px;margin-top: 10px;font-size: 20px;font-family: Arial,serif;">
+
+    <div style="width:15%;float:left;color:white;margin-left: 20px;margin-top: 10px;font-size: 20px;font-family: Arial,serif;">
         <span>{{img_info|length}} models found</span>
     </div>
+
+    <div class="custom-select" style="width:10%;float:left;">
+        <select id="label" name="label" style="z-index:99">
+            <option value="" selected>LABEL</option>
+            {% for label in labels %}
+            <option value="{{label}}">{{label.upper()}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button id="annotate" type="button" class="submit" onclick="annotateItem(); return;"
+    style="width:10%;float:left;margin-right: 20px;background-color: yellowgreen">MOVE
+    </button>
+
+    <button id="delete" type="button" class="submit" onclick="changeItem(); return;"
+            style="width:10%;float:left;margin-right: 20px;background-color: darkred">DELETE
+    </button>
+
 </form>
 
 <div class="main" id="main">
@@ -60,11 +77,15 @@
         {% for idx, rows in img_info.iterrows() %}
         <div class="item nopad" style="max-width:290px" id={{rows['id']}}>
             <label class="image-checkbox">
-                <img class="img-responsive" src="/image/{{rows['id']}}" data-src="/image/{{rows['id']}}" alt="{{rows['id']}}">
+                <img class="img-responsive" src="/image/{{rows['id']}}" data-src="/image/{{rows['id']}}"
+                     alt="{{rows['id']}}">
                 <input type="checkbox" name="image" value={{rows['id']}}>
                 <i class="fa fa-check hidden"></i>
                 <div class="over">{{rows['name']}}
-                    <button id="view" onclick="openView('{{rows["id"]}}')">3D View</button>
+                    <button class="view" onclick="openView('{{rows["id"]}}')">3D View</button>
+                    <span class="view"
+                          style="background-color:cornflowerblue;font-size:14px;margin-bottom:0.5px;margin-right: 2px;padding: 1px">{{rows['original_label']}}
+                    </span>
                 </div>
             </label>
         </div>
@@ -79,37 +100,6 @@
 <script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-<script>
-    $('#image').flexImages({truncate: 1});
-
-    if (~window.location.href.indexOf('http')) {
-        (function () {
-            var po = document.createElement('script');
-            po.type = 'text/javascript';
-            po.async = true;
-            po.src = 'https://apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(po, s);
-        })();
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=114593902037957";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-        !function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-            if (!d.getElementById(id)) {
-                js = d.createElement(s);
-                js.id = id;
-                js.src = p + '://platform.twitter.com/widgets.js';
-                fjs.parentNode.insertBefore(js, fjs);
-            }
-        }(document, 'script', 'twitter-wjs');
-    }
-</script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const cad = urlParams.get('cad');
@@ -182,6 +172,8 @@
         });
     }
 
+    document.addEventListener("click", closeAllSelect);
+
     function closeAllSelect(elmnt) {
         /*a function that will close all select boxes in the document,
         except the current select box:*/
@@ -202,25 +194,7 @@
         }
     }
 
-    /*if the user clicks anywhere outside the select box,
-    then close all select boxes:*/
-    document.addEventListener("click", closeAllSelect);
 
-    $(".image-checkbox").each(function () {
-        if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
-            $(this).addClass('image-checkbox-checked');
-        } else {
-            $(this).removeClass('image-checkbox-checked');
-        }
-    });
-
-    // sync the state to the input
-    $(".image-checkbox").on("click", function (e) {
-        $(this).toggleClass('image-checkbox-checked');
-        var $checkbox = $(this).find('input[type="checkbox"]');
-        $checkbox.prop("checked", !$checkbox.prop("checked"));
-        e.preventDefault();
-    });
 </script>
 </body>
 </html>

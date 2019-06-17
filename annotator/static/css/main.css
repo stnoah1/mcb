@@ -343,7 +343,7 @@ li {
     display: block !important;
 }
 
-#view {
+.view {
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;

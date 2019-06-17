@@ -4,14 +4,23 @@ select_keywords = '''
 
 select_images = '''
     select id, 
-        name 
+        name, 
+        SPLIT_PART(file, '/', 6) as original_label
     from cad_file 
     where lower(label) = '{label}' and file like '%%.obj' {cad_type}
     order by file_size, name;
 '''
 
-update_filter = '''
-    update cad_file set label='' where id='{id}';
+select_annotation_keywords = '''
+    select name 
+    from keyword 
+    where use = True
+    order by name;
+'''
+
+
+update_label = '''
+    update cad_file set label='{label}' where id='{id}';
 '''
 
 select_object_by_id = '''
@@ -30,6 +39,13 @@ stats = '''
     ORDER BY total DESC
 '''
 
-stats_new = '''
-
+select_unlabeled = '''
+    SELECT id,
+           name,
+           SPLIT_PART(file, '/', 6) as original_label
+    FROM cad_file
+    WHERE label = ''
+    ORDER BY name;
 '''
+
+

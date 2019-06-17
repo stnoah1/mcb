@@ -17,9 +17,17 @@ def get_cad_imgs(label, cad_type):
     return read(queries.select_images.format(label=label, cad_type=cad_type))
 
 
-def filter_data(ids):
+def get_unlabeled_imgs():
+    return read(queries.select_unlabeled)
+
+
+def get_annotation_label():
+    return read(queries.select_annotation_keywords)['name']
+
+
+def update_item(ids, label):
     for id in ids:
-        query(queries.update_filter.format(id=id))
+        query(queries.update_label.format(label=label, id=id))
 
 
 @app.route("/gallery", methods=["GET"])
@@ -32,7 +40,7 @@ def gallery():
     keyword = request.args.get('keyword', '')
     img_info = get_cad_imgs(keyword, condition)
     print(f'{len(img_info)} was found!!')
-    return render_template('gallery.html', img_info=img_info, keywords=get_keywords())
+    return render_template('gallery.html', img_info=img_info, keywords=get_keywords(), labels=get_annotation_label())
 
 
 @app.route("/")
@@ -59,7 +67,7 @@ def remove_item():
     payload = json.loads(request.data)
     pprint(payload)
     if payload['ids']:
-        filter_data(payload['ids'])
+        update_item(payload['ids'], payload['label'])
     return "success"
 
 
@@ -102,8 +110,3 @@ def obj_viewer():
 @app.route("/viewer")
 def viewer():
     return render_template(f'viewer.html')
-
-
-@app.route("/annotator")
-def annotator():
-    return render_template(f'annotator.html', labels=get_keywords())
