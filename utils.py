@@ -24,4 +24,4 @@ def clean_dir(directory):
 
 
 def get_keywords():
-    return read(queries.select_keywords)['name'].tolist()
+    return read(queries.select_keywords)

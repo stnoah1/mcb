@@ -2,6 +2,7 @@ import os
 import shutil
 
 from config import assimp_path
+from db import read
 
 
 def filter_escape_char(char):
@@ -53,3 +54,7 @@ def convert_to_obj(file):
         return obj_file
     else:
         return file
+
+
+def get_keyword_id(keyword):
+    return read(f"SELECT * from keyword where name = '{keyword}'")['id'][0]

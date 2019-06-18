@@ -11,7 +11,7 @@ import db
 from create_img import create_image
 from utils import make_dir, clean_dir
 from config import dw_path
-from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
+from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj, get_keyword_id
 
 url = 'https://3dwarehouse.sketchup.com/warehouse/v1.0/entities'
 
@@ -64,7 +64,7 @@ def insert_search_log(keyword, total):
     return db.insert('search_log', **{'keyword': keyword, 'website': '3DW', 'total': total})
 
 
-def insert_dw_file(id, name, image, filepath, keyword):
+def insert_dw_file(id, name, image, filepath, keyword_id):
     if not os.path.isfile(filepath):
         raise FileNotFoundError
 
@@ -76,7 +76,7 @@ def insert_dw_file(id, name, image, filepath, keyword):
         'web_image': image,
         'source': 3,
         'image': filepath.replace('/3DW/', '/image/3DW/').replace('.obj', '.png'),
-        'label': keyword,
+        'label': keyword_id,
         'file_size': os.path.getsize(filepath)
     }
     return db.insert('cad_file', ignore=True, **payload)
@@ -92,10 +92,10 @@ def run(keyword, title_matching=False):
     total = init_results['total']
     total_search = total // per_search
     insert_search_log(keyword, total)
-    print(f'{total} models found')
-
     output_dir = f'{dw_path}/{keyword}'
     make_dir(output_dir)
+    keyword_id = get_keyword_id(keyword)
+    print(f'{total} models found')
 
     for i in range(total_search + 1):
         results = search(keyword, per_search, offset=i * per_search)
@@ -125,7 +125,7 @@ def run(keyword, title_matching=False):
                     # else:
                     image = item['binaries']['bot_lt']['contentUrl']
 
-                    insert_dw_file(id, name, image, obj_file, keyword)
+                    insert_dw_file(id, name, image, obj_file, keyword_id)
 
                 shutil.rmtree(unzipped_dir)
 

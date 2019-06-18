@@ -10,7 +10,7 @@ from tqdm import tqdm
 import db
 from config import grabcad_path
 from create_img import create_image
-from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj
+from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj, get_keyword_id
 from utils import make_dir, clean_dir
 
 grapcad_url = 'https://grabcad.com'
@@ -97,7 +97,7 @@ def insert_search_log(keyword, total, softwares):
                      })
 
 
-def insert_grabcad_file(cadid, filepath, model_name, image, keyword):
+def insert_grabcad_file(cadid, filepath, model_name, image, keyword_id):
     if not os.path.isfile(filepath):
         raise FileNotFoundError
 
@@ -109,7 +109,7 @@ def insert_grabcad_file(cadid, filepath, model_name, image, keyword):
         'web_image': image,
         'source': 3,
         'image': filepath.replace('/grabCAD/', '/image/grabCAD/').replace('.obj', '.png'),
-        'label': keyword,
+        'label': keyword_id,
         'file_size': os.path.getsize(filepath)
 
     }
@@ -127,6 +127,7 @@ def run(keyword, softwares=None):
 
     output_dir = f'{grabcad_path}/{keyword}'
     make_dir(output_dir)
+    keyword_id = get_keyword_id(keyword)
 
     # search models
     model_names, model_images = get_models(keyword, softwares=softwares)
@@ -162,7 +163,7 @@ def run(keyword, softwares=None):
             for file in files:
                 moved_file = move_file(join(unzipped_dir, file), output_dir)
                 obj_file = convert_to_obj(moved_file)
-                insert_grabcad_file(cadid, obj_file, model_name, model_image, keyword)
+                insert_grabcad_file(cadid, obj_file, model_name, model_image, keyword_id)
 
             # remove unzipped directory
             shutil.rmtree(unzipped_dir)

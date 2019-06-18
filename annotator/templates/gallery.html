@@ -39,11 +39,9 @@
     <div class="custom-select" style="width:10%;">
         <select id="keyword" name="keyword" style="z-index:99">
             <option value="" selected>KEYWORD</option>
-            {% for keyword in keywords %}
-            <option value="{{keyword}}">{{keyword.upper()}}</option>
+            {% for idx, item in keywords.iterrows() %}
+            <option value="{{item['id']}}">{{item['name'].upper()}}</option>
             {% endfor %}
-            <option value="">UNLABELED</option>
-            <option value="miscellaneous">DELETED</option>
         </select>
     </div>
 

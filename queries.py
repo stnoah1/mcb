@@ -1,5 +1,5 @@
 select_keywords = '''
-    select name from keyword order by name;
+    select id, name from keyword order by name;
 '''
 
 select_images = '''
@@ -7,7 +7,7 @@ select_images = '''
         name, 
         SPLIT_PART(file, '/', 6) as original_label
     from cad_file 
-    where lower(label) = '{label}' and file like '%%.obj' {cad_type}
+    where label = {label} and file like '%%.obj' {cad_type}
     order by file_size, name;
 '''
 

@@ -103,7 +103,7 @@ function changeItem() {
     xhr.send(JSON.stringify({
         "keyword": keyword,
         "ids": checkedBoxes,
-        "label": 'miscellaneous',
+        "label": -1,
     }));
     for (i = 0; i < checkedBoxes.length; i++) {
         removeElement(checkedBoxes[i]);
