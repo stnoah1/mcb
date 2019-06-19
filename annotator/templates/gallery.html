@@ -54,8 +54,8 @@
     <div class="custom-select" style="width:10%;float:left;">
         <select id="label" name="label" style="z-index:99">
             <option value="" selected>LABEL</option>
-            {% for label in labels %}
-            <option value="{{label}}">{{label.upper()}}</option>
+            {% for idx, item in labels.iterrows() %}
+            <option value="{{item['id']}}">{{item['name'].upper()}}</option>
             {% endfor %}
         </select>
     </div>

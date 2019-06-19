@@ -22,7 +22,7 @@ def get_unlabeled_imgs():
 
 
 def get_annotation_label():
-    return read(queries.select_annotation_keywords)['name']
+    return read(queries.select_annotation_keywords)
 
 
 def update_item(ids, label):

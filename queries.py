@@ -12,7 +12,7 @@ select_images = '''
 '''
 
 select_annotation_keywords = '''
-    select name 
+    select id, name 
     from keyword 
     where use = True
     order by name;
