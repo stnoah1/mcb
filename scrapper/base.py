@@ -67,6 +67,3 @@ def stp_to_obj(file):
 
 def get_keyword_id(keyword):
     return read(f"SELECT * from keyword where name = '{keyword}'")['id'][0]
-
-import pyassimp
-pyassimp.load('/mnt/data/ENGR_data/tracePart/ANSI_INCH/ANSI_ASME_ASTM Inch/c_shape_c_3_x_3_5_x_500.stp')

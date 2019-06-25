@@ -30,17 +30,25 @@ select_object_by_id = '''
 '''
 
 stats = '''
-    SELECT keyword.name                                as LABEL,
-           SUM(CASE WHEN source = 1 THEN 1 ELSE 0 END) as ME444,
-           SUM(CASE WHEN source = 2 THEN 1 ELSE 0 END) as Data_Warehouse,
-           SUM(CASE WHEN source = 3 THEN 1 ELSE 0 END) as grabCAD,
-           COUNT(*)                                    as TOTAL
-    FROM cad_file
-    LEFT JOIN keyword
-    ON cad_file.label = keyword.id
-    WHERE file like '%%.obj'and label > 0 and parent = 0 and use = true
-    GROUP BY keyword.name
-    ORDER BY total DESC
+    SELECT B.name as Category, A.SubCategory, A.ME444, A.Data_Warehouse, A.grabCAD, A.TOTAL
+    FROM (SELECT CASE WHEN keyword.parent = 0 THEN keyword.id ELSE keyword.parent END as Category,
+                 keyword.name                                                         as SubCategory,
+                 SUM(CASE WHEN source = 1 THEN 1 ELSE 0 END)                          as ME444,
+                 SUM(CASE WHEN source = 2 THEN 1 ELSE 0 END)                          as Data_Warehouse,
+                 SUM(CASE WHEN source = 3 THEN 1 ELSE 0 END)                          as grabCAD,
+                 COUNT(*)                                                             as TOTAL
+          FROM cad_file
+          LEFT JOIN keyword
+          ON cad_file.label = keyword.id
+          WHERE file like '%%.obj'
+            and label >= 0
+            and use = true
+          GROUP BY keyword.id
+          ORDER BY Category ASC
+         ) AS A
+    LEFT JOIN keyword B
+    ON A.Category = B.id
+    ORDER BY A.Category
 '''
 
 select_unlabeled = '''
