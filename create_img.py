@@ -15,4 +15,3 @@ def create_all_image():
 def create_image(directory):
     if os.path.isdir(directory):
         matlab_api.make_image(directory)
-

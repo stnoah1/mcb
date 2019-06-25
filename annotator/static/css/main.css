@@ -211,7 +211,7 @@ pre em {
 }
 
 ul {
-    max-height: 500px;
+    max-height: 650px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;

@@ -21,8 +21,12 @@ def get_unlabeled_imgs():
     return read(queries.select_unlabeled)
 
 
-def get_annotation_label():
-    return read(queries.select_annotation_keywords)
+def get_category():
+    return read(queries.select_category.format(parent=0))
+
+
+def get_subcategory(parent):
+    return read(queries.select_category.format(parent=parent))
 
 
 def update_item(ids, label):
@@ -40,12 +44,12 @@ def gallery():
     keyword = request.args.get('keyword', '')
     img_info = get_cad_imgs(keyword, condition)
     print(f'{len(img_info)} was found!!')
-    return render_template('gallery.html', img_info=img_info, keywords=get_keywords(), labels=get_annotation_label())
+    return render_template('gallery.html', img_info=img_info, keywords=get_keywords(), labels=get_category())
 
 
 @app.route("/")
 def index():
-    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_keywords())
+    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_keywords(), labels=get_category())
 
 
 @app.route('/stats', methods=("POST", "GET"))
@@ -110,3 +114,9 @@ def obj_viewer():
 @app.route("/viewer")
 def viewer():
     return render_template(f'viewer.html')
+
+
+@app.route("/subcategory", methods=["GET"])
+def subcategory():
+    parent = request.args.get('category', '')
+    return get_subcategory(parent).to_json(orient='records')

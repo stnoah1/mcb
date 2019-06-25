@@ -1,5 +1,8 @@
 select_keywords = '''
-    select id, name from keyword order by name;
+    select id, name 
+    from keyword 
+    WHERE use=true 
+    order by name;
 '''
 
 select_images = '''
@@ -11,13 +14,12 @@ select_images = '''
     order by file_size, name;
 '''
 
-select_annotation_keywords = '''
+select_category = '''
     select id, name 
     from keyword 
-    where use = True
+    where use = True and parent={parent}
     order by name;
 '''
-
 
 update_label = '''
     update cad_file set label='{label}' where id='{id}';
@@ -28,14 +30,16 @@ select_object_by_id = '''
 '''
 
 stats = '''
-    SELECT UPPER(label)                                as LABEL,
+    SELECT keyword.name                                as LABEL,
            SUM(CASE WHEN source = 1 THEN 1 ELSE 0 END) as ME444,
            SUM(CASE WHEN source = 2 THEN 1 ELSE 0 END) as Data_Warehouse,
            SUM(CASE WHEN source = 3 THEN 1 ELSE 0 END) as grabCAD,
            COUNT(*)                                    as TOTAL
     FROM cad_file
-    WHERE file like '%%.obj'and label <> ''
-    GROUP BY label
+    LEFT JOIN keyword
+    ON cad_file.label = keyword.id
+    WHERE file like '%%.obj'and label > 0 and parent = 0 and use = true
+    GROUP BY keyword.name
     ORDER BY total DESC
 '''
 

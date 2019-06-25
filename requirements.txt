@@ -1,3 +1,4 @@
+trimesh
 tqdm
 scipy
 numpy
@@ -11,3 +12,5 @@ requests
 wget
 beautifulsoup4
 anytree
+gmsh-sdk
+shapely

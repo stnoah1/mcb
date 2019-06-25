@@ -1,15 +1,13 @@
 import os
 import shutil
 
+# import trimesh
+
 from config import assimp_path
 from db import read
 
 
 def filter_escape_char(char):
-    return char.replace("\'", "\'\'")
-
-
-def remove_escape_char(char):
     return char.replace("\'", "\'\'")
 
 
@@ -56,5 +54,19 @@ def convert_to_obj(file):
         return file
 
 
+def stp_to_obj(file):
+    basename = os.path.basename(file)
+    filename, ext = os.path.splitext(basename)
+    if ext.lower().endswith('.stp'):
+        obj_file = file.replace(ext, '.obj')
+        print(trimesh.load_path(file))
+        return obj_file
+    else:
+        return file
+
+
 def get_keyword_id(keyword):
     return read(f"SELECT * from keyword where name = '{keyword}'")['id'][0]
+
+import pyassimp
+pyassimp.load('/mnt/data/ENGR_data/tracePart/ANSI_INCH/ANSI_ASME_ASTM Inch/c_shape_c_3_x_3_5_x_500.stp')

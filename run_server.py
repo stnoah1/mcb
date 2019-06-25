@@ -1,4 +1,5 @@
 from annotator.app import app
+from config import host
 
 if __name__ == "__main__":
-    app.run(host='128.46.190.198', debug=True)
+    app.run(host=host, debug=True)
