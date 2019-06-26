@@ -60,4 +60,21 @@ select_unlabeled = '''
     ORDER BY name;
 '''
 
-
+select_dataset = '''
+    SELECT A.id,
+           A.name,
+           A.file,
+           CASE WHEN A.parent = 0 THEN Null ELSE A.subcategory END as subcategory,
+           CASE WHEN A.parent = 0 THEN A.subcategory ELSE B.name END as category
+    FROM (SELECT cad_file.id, cad_file.name, file, parent, keyword.name as subcategory
+          FROM cad_file
+          LEFT JOIN keyword
+              ON cad_file.label = keyword.id
+          WHERE file like '%%.obj'
+            and label >= 0
+            and use = true
+            and keyword.name <> 'miscellaneous'
+         ) A
+    LEFT JOIN keyword B
+        ON A.parent = B.id
+'''

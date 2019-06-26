@@ -61,7 +61,7 @@ def stat():
     df['SUBCATEGORY'] = [item.capitalize() for item in df['SUBCATEGORY']]
     df = df.pivot_table(index=['CATEGORY', 'SUBCATEGORY'],
                         margins=True,
-                        margins_name='===== TOTAL =====',  # defaults to 'All'
+                        margins_name='======= TOTAL =======',  # defaults to 'All'
                         aggfunc=sum)
     return render_template('stats.html', tables=[df.to_html(table_id='stats', classes='data', header="true")])
 
