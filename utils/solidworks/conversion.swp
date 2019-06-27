@@ -1,0 +1,59 @@
+Option Explicit
+    Dim swApp As SldWorks.SldWorks
+    Dim swPart As SldWorks.PartDoc
+    Dim swModel As SldWorks.ModelDoc2
+    Dim swModelDocExt As SldWorks.ModelDocExtension
+    Dim swImportStepData As SldWorks.ImportStepData
+    Dim status As Boolean
+    Dim errors As Long
+    Dim warnings As Long
+    Dim fileName As String
+    Dim stlFileName As String
+    Dim FileSystem As Object
+
+    Sub main()
+        Set swApp = Application.SldWorks
+
+        swApp.Visible = False
+        swApp.UserControl = False
+
+        Dim SrcFolder As String
+        Dim SLDFile As String
+        Dim CatFolder As String
+
+        SrcFolder = "C:\Users\chi45\Downloads\grabCAD" 'update file path
+
+        Dim fs, f, f1, cat, sf
+        Set fs = CreateObject("Scripting.FileSystemObject")
+        Set f = fs.GetFolder(SrcFolder)
+        Set sf = f.SubFolders
+
+        On Error Resume Next
+        For Each f1 In sf
+
+            CatFolder = SrcFolder & "\" & f1.Name
+            SLDFile = Dir(CatFolder & "\" & "*.SLDPRT")
+
+            Do While Len(SLDFile) > 0
+                'Open the SOLIDWORKS part document to export to a STEP file
+                fileName = CatFolder & "\" & SLDFile
+                Debug.Print fileName
+
+                Set swPart = swApp.OpenDoc6(fileName, swDocumentTypes_e.swDocPART, swOpenDocOptions_e.swOpenDocOptions_Silent, "", errors, warnings)
+                Set swModel = swPart
+                Set swModelDocExt = swModel.Extension
+
+                'Export the SOLIDWORKS part document to a STEP file
+                stlFileName = Replace(fileName, ".SLDPRT", ".stl")
+                status = swModelDocExt.SaveAs(stlFileName, 0, swSaveAsOptions_e.swSaveAsOptions_Silent, Nothing, errors, warnings)
+                Set swPart = Nothing
+
+                swApp.CloseDoc SLDFile
+
+                Kill fileName
+                SLDFile = Dir
+            Loop
+
+        Next
+
+    End Sub

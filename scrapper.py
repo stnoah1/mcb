@@ -2,7 +2,8 @@ import logging
 from datetime import datetime
 from database import agent
 from scrapper import grab_cad, dw
-from utils.utils import make_dir, get_keywords
+from utils.utils import make_dir
+from tools import get_keywords
 
 make_dir('log')
 logging.basicConfig(filename=f'log/{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.ERROR)

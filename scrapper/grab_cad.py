@@ -10,7 +10,8 @@ from tqdm import tqdm
 from database import agent
 from config import grabcad_path
 from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj, get_keyword_id
-from utils.utils import make_dir, clean_dir, create_image
+from utils.utils import make_dir, clean_dir
+from tools import create_image
 
 grapcad_url = 'https://grabcad.com'
 api_url = f'{grapcad_url}/community/api/v1/models'

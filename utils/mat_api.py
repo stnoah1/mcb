@@ -9,7 +9,7 @@ from utils.utils import make_dir
 class MatlabAPI:
     def __init__(self):
         self.eng = matlab.engine.start_matlab()
-        self.eng.addpath(r'mat_files', nargout=0)
+        self.eng.addpath(r'utils/mat_files', nargout=0)
 
     def make_image(self, obj_dir, output_dir=None):
         if not output_dir:
