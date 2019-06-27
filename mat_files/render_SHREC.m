@@ -16,8 +16,7 @@ inds = 3:length(files);
 
 for i=inds
   modelname = files(i).name
-  modelname_ = strsplit(modelname,'.');
-  imname = modelname_{1};
+  [filepath,imname,ext] = fileparts(modelname);
   if exist([imdirpath '/' imname '.png']) > 0
     continue
   end
