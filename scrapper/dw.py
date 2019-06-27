@@ -7,9 +7,8 @@ import requests
 import wget
 from tqdm import tqdm
 
-import db
-from create_img import create_image
-from utils import make_dir, clean_dir
+from database import agent
+from utils.utils import make_dir, clean_dir, create_image
 from config import dw_path
 from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj, get_keyword_id
 
@@ -57,11 +56,11 @@ def filter_files(unzipped_dir):
 
 
 def is_model(cadid):
-    return not db.read(f"SELECT * from cad_file WHERE source=2 and source_id='{cadid}'").empty
+    return not agent.read(f"SELECT * from cad_file WHERE source=2 and source_id='{cadid}'").empty
 
 
 def insert_search_log(keyword, total):
-    return db.insert('search_log', **{'keyword': keyword, 'website': '3DW', 'total': total})
+    return agent.insert('search_log', **{'keyword': keyword, 'website': '3DW', 'total': total})
 
 
 def insert_dw_file(id, name, image, filepath, keyword_id):
@@ -79,11 +78,11 @@ def insert_dw_file(id, name, image, filepath, keyword_id):
         'label': keyword_id,
         'file_size': os.path.getsize(filepath)
     }
-    return db.insert('cad_file', ignore=True, **payload)
+    return agent.insert('cad_file', ignore=True, **payload)
 
 
 def update_thumbnail():
-    db.read('select * from ')
+    agent.read('select * from ')
 
 
 def run(keyword, title_matching=False):

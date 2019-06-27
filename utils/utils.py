@@ -1,10 +1,13 @@
 import os
 import shutil
-
-import queries
-from tqdm import tqdm
-from db import read
 from shutil import copyfile
+
+from tqdm import tqdm
+
+from config import dw_path, grabcad_path
+from database import queries
+from database.agent import read
+from utils.mat_api import MatlabAPI
 
 
 def make_dir(directory):
@@ -46,4 +49,14 @@ def make_dataset(path):
                 print(filename, item['id'])
 
 
-make_dataset('/mnt/data/ENGR_data/dataset')
+def create_all_image():
+    for cad_dir in [dw_path, grabcad_path]:
+        for directory in os.listdir(cad_dir):
+            create_image(os.path.join(cad_dir, directory))
+
+
+def create_image(directory):
+    matlab_api = MatlabAPI()
+
+    if os.path.isdir(directory):
+        matlab_api.make_image(directory)

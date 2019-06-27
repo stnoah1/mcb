@@ -1,10 +1,11 @@
 import os
 import shutil
 
-# import trimesh
-
 from config import assimp_path
-from db import read
+from database.agent import read
+
+
+# import trimesh
 
 
 def filter_escape_char(char):

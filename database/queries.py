@@ -11,9 +11,14 @@ select_images = '''
         SPLIT_PART(file, '/', 6) as original_label
     from cad_file 
     where label = {label} and file like '%%.obj' {cad_type}
-    order by file_size, name;
+    order by original_label, file_size, name;
 '''
 
+check_trace_part_data = '''
+    select *
+    from cad_file
+    where source = 4 and name = '{name}';
+'''
 select_category = '''
     select id, name 
     from keyword 

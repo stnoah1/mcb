@@ -6,9 +6,8 @@ from zipfile import ZipFile
 import pandas as pd
 from flask import Flask, request, render_template, send_from_directory, after_this_request
 
-import queries
-from db import read, query
-from utils import get_keywords
+from database import queries
+from database.agent import read, query
 
 app = Flask(__name__)
 
@@ -34,36 +33,8 @@ def update_item(ids, label):
         query(queries.update_label.format(label=label, id=id))
 
 
-@app.route("/gallery", methods=["GET"])
-def gallery():
-    cad_type = request.args.get('cad', '')
-    if cad_type == '0':
-        condition = ''
-    else:
-        condition = f'and source = {cad_type}'
-    keyword = request.args.get('keyword', '')
-    img_info = get_cad_imgs(keyword, condition)
-    print(f'{len(img_info)} was found!!')
-    return render_template('gallery.html', img_info=img_info, keywords=get_keywords(), labels=get_category())
-
-
-@app.route("/")
-def index():
-    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_keywords(), labels=get_category())
-
-
-@app.route('/stats', methods=("POST", "GET"))
-def stat():
-    df = read(queries.stats)
-    df.columns = [column.upper() for column in df.columns]
-    df = df[df.CATEGORY != 'miscellaneous']
-    df['CATEGORY'] = [item.upper() for item in df['CATEGORY']]
-    df['SUBCATEGORY'] = [item.capitalize() for item in df['SUBCATEGORY']]
-    df = df.pivot_table(index=['CATEGORY', 'SUBCATEGORY'],
-                        margins=True,
-                        margins_name='======= TOTAL =======',  # defaults to 'All'
-                        aggfunc=sum)
-    return render_template('stats.html', tables=[df.to_html(table_id='stats', classes='data', header="true")])
+def get_miscellaneous():
+    return read("SELECT * FROM keyword WHERE parent=214")
 
 
 @app.route("/filter", methods=["POST"])
@@ -100,6 +71,12 @@ def get_zip(id):
     return send_from_directory(os.path.dirname(zip_path), os.path.basename(zip_path))
 
 
+@app.route("/subcategory", methods=["GET"])
+def subcategory():
+    parent = request.args.get('category', '')
+    return get_subcategory(parent).to_json(orient='records')
+
+
 @app.route('/image/<id>')
 def get_img(id):
     img_path = read(queries.select_object_by_id.format(id=id))['image'][0]
@@ -116,7 +93,34 @@ def viewer():
     return render_template(f'viewer.html')
 
 
-@app.route("/subcategory", methods=["GET"])
-def subcategory():
-    parent = request.args.get('category', '')
-    return get_subcategory(parent).to_json(orient='records')
+@app.route("/gallery", methods=["GET"])
+def gallery():
+    cad_type = request.args.get('cad', '')
+    if cad_type == '0':
+        condition = ''
+    else:
+        condition = f'and source = {cad_type}'
+    keyword = request.args.get('keyword', '')
+    img_info = get_cad_imgs(keyword, condition)
+    print(f'{len(img_info)} was found!!')
+    return render_template('gallery.html', img_info=img_info[:200], keywords=get_miscellaneous(), labels=get_category())
+
+
+@app.route("/")
+def index():
+    print(get_miscellaneous())
+    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_miscellaneous(), labels=get_category())
+
+
+@app.route('/stats', methods=("POST", "GET"))
+def stat():
+    df = read(queries.stats)
+    df.columns = [column.upper() for column in df.columns]
+    df = df[df.CATEGORY != 'miscellaneous']
+    df['CATEGORY'] = [item.upper() for item in df['CATEGORY']]
+    df['SUBCATEGORY'] = [item.capitalize() for item in df['SUBCATEGORY']]
+    df = df.pivot_table(index=['CATEGORY', 'SUBCATEGORY'],
+                        margins=True,
+                        margins_name='======= TOTAL =======',  # defaults to 'All'
+                        aggfunc=sum)
+    return render_template('stats.html', tables=[df.to_html(table_id='stats', classes='data', header="true")])

@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
-import db
+from database import agent
 from scrapper import grab_cad, dw
-from utils import make_dir, get_keywords
+from utils.utils import make_dir, get_keywords
 
 make_dir('log')
 logging.basicConfig(filename=f'log/{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.ERROR)
@@ -17,7 +17,7 @@ def search(keyword, websites=None):
     logging.info(f'KEYWORD: {keyword}')
 
     if keyword not in get_keywords():
-        db.insert('keyword', ignore=True, **{'name': keyword})
+        agent.insert('keyword', ignore=True, **{'name': keyword})
 
     if 'grabcad' in websites:
         logging.info('grabCAD')

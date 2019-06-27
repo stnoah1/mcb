@@ -2,6 +2,7 @@ import io
 import json
 import os
 import shutil
+import time
 import urllib.request
 import zipfile
 import uuid
@@ -12,10 +13,10 @@ from anytree import Node, RenderTree
 from anytree.dotexport import RenderTreeGraph
 from bs4 import BeautifulSoup
 
-import db
+from database import agent, queries
 from config import api_key
 from scrapper.base import unzip_file, move_file
-from utils import make_dir
+from utils.utils import make_dir
 
 trace_parts_url = 'https://www.traceparts.com'
 trace_parts_api_url = 'http://ws.tracepartsonline.net/tpowebservices'
@@ -25,35 +26,42 @@ data_path = '/mnt/data/ENGR_data/tracePart'
 def get_category(save_img=True):
     url = f'{trace_parts_url}/en/search/traceparts-classification-mechanical-components?CatalogPath=TRACEPARTS%3ATP01'
     print(url)
-    r = requests.get(url)
 
-    if r.status_code == 200:
+    while True:
+        r = requests.get(url)
 
-        soup = BeautifulSoup(r.text, 'html.parser')
-        root = Node('Mechanical components')
-        node = root
-        prev_level = 1
+        if r.status_code == 200:
 
-        for cat in soup.find_all('span', {'class': 'treeview-node-title'}):
-            levels = cat.get('title').split('>')
-            levels = [c.strip() for c in levels]
+            soup = BeautifulSoup(r.text, 'html.parser')
+            root = Node('Mechanical components')
+            node = root
+            prev_level = 1
 
-            if levels[0] == 'Mechanical components' and len(levels) > 1:
-                depth = len(levels) - prev_level
-                prev_level = len(levels)
-                if depth <= 0:
-                    for i in range(abs(depth) + 1):
-                        node = node.parent
-                node = Node(levels[-1], parent=node)
-                # value=label.get('for')
-        for pre, fill, node in RenderTree(root):
-            print("%s%s" % (pre, node.name))
+            for cat in soup.find_all('span', {'class': 'treeview-node-title'}):
+                levels = cat.get('title').split('>')
+                levels = [c.strip() for c in levels]
 
-        if save_img:
-            RenderTreeGraph(root).to_picture("tree.png")
+                if levels[0] == 'Mechanical components' and len(levels) > 1:
+                    depth = len(levels) - prev_level
+                    prev_level = len(levels)
+                    if depth <= 0:
+                        for i in range(abs(depth) + 1):
+                            node = node.parent
+                    node = Node(levels[-1], parent=node)
+                    # value=label.get('for')
+            for pre, fill, node in RenderTree(root):
+                print("%s%s" % (pre, node.name))
 
-    else:
-        raise ConnectionError
+            if save_img:
+                RenderTreeGraph(root).to_picture("tree.png")
+
+            return
+
+        elif r.status_code == 503:
+            time.sleep(10 * 60)
+
+        else:
+            raise ConnectionError
 
 
 def get_url(subpath, payload):
@@ -91,13 +99,17 @@ def get_catalogs():
         'Language': 'en',
     }
     url = get_url('CatalogsList', payload)
-    r = requests.get(url)
 
-    if r.status_code == 200:
-        return r.json()['classificationList']
+    while True:
+        r = requests.get(url)
+        if r.status_code == 200:
+            return r.json()['classificationList']
 
-    else:
-        raise ConnectionError
+        elif r.status_code == 503:
+            time.sleep(10 * 60)
+
+        else:
+            raise ConnectionError
 
 
 def insert_cad_file(filepath, model_name):
@@ -109,9 +121,9 @@ def insert_cad_file(filepath, model_name):
         'file': filepath,
         'source': 4,
         'image': filepath.replace('/tracePart/', '/image/tracePart/').replace('.obj', '.png'),
-        'file_size': 0 #os.path.getsize(filepath)
+        'file_size': 0  # os.path.getsize(filepath)
     }
-    return db.insert('cad_file', ignore=True, **payload)
+    return agent.insert('cad_file', ignore=True, **payload)
 
 
 def run():
@@ -119,26 +131,36 @@ def run():
     for catalog in catalog_list:
         print(catalog)
         categories = get_categories(catalog)
+
         for category in categories:
             print('\t', category['title'])
+
+            if category['title'].startswith('ANSI') or category['title'].startswith('DIN'):
+                continue
+
             products = get_products(catalog, category['path'])
+
             for product in products:
                 print('\t\t', product['title'])
                 cad_infos = extract_data(catalog, product['partID'])
+
                 for cad_info in cad_infos:
                     print(cad_info['partNumber'])
-                    cad_url = get_cad_url(catalog, cad_info['partNumber'])
-                    output_dir = f"{data_path}/{catalog}/{category['title'] if '/' not in category['title'] else category['title'].replace('/', '_')}"
-                    make_dir(output_dir)
-                    filename = str(uuid.uuid4()) + '.zip'
-                    urllib.request.urlretrieve(cad_url, filename=f'{output_dir}/{filename}')
-                    unzipped_dir = unzip_file(os.path.join(output_dir, filename))
-                    for file in os.listdir(unzipped_dir):
-                        if file.endswith('.stp'):
-                            move_file(os.path.join(unzipped_dir, file), output_dir)
-                            # convert file
-                            insert_cad_file(os.path.join(unzipped_dir, file).replace('.stp', '.obj'), file.split('.')[0])
-                    shutil.rmtree(unzipped_dir)
+
+                    if not is_data(cad_info['partNumber']):
+                        cad_url = get_cad_url(catalog, cad_info['partNumber'])
+                        output_dir = f"{data_path}/{catalog}/{category['title'] if '/' not in category['title'] else category['title'].replace('/', '_')}"
+                        make_dir(output_dir)
+                        filename = str(uuid.uuid4()) + '.zip'
+                        urllib.request.urlretrieve(cad_url, filename=f'{output_dir}/{filename}')
+                        unzipped_dir = unzip_file(os.path.join(output_dir, filename))
+                        for file in os.listdir(unzipped_dir):
+                            if file.endswith('.stp'):
+                                moved_file = move_file(os.path.join(unzipped_dir, file), output_dir)
+                                # convert file
+                                # update file size
+                                insert_cad_file(moved_file.replace('.stp', '.obj'), cad_info['partNumber'])
+                        shutil.rmtree(unzipped_dir)
 
                     # update cad_file database
                     # Exception
@@ -156,11 +178,15 @@ def get_categories(catalog):
     url = get_url('CategoriesList', payload)
     r = requests.get(url)
 
-    if r.status_code == 200:
-        return r.json()['categorieList']
+    while True:
+        if r.status_code == 200:
+            return r.json()['categorieList']
 
-    else:
-        raise ConnectionError
+        elif r.status_code == 503:
+            time.sleep(10 * 60)
+
+        else:
+            raise ConnectionError
 
 
 def get_products(catalog, path):
@@ -175,13 +201,19 @@ def get_products(catalog, path):
     }
 
     url = get_url('ProductsList', payload)
-    r = requests.get(url)
 
-    if r.status_code == 200:
-        return r.json()['productList']
+    while True:
+        r = requests.get(url)
 
-    else:
-        raise ConnectionError
+        if r.status_code == 200:
+            return r.json()['productList']
+
+        else:
+            raise ConnectionError
+
+
+def is_data(dataname):
+    return not agent.read(queries.check_trace_part_data.format(name=dataname)).empty
 
 
 def extract_data(catalog, part_id):
@@ -196,13 +228,19 @@ def extract_data(catalog, part_id):
     }
 
     url = get_url('SynchronizationData', payload)
-    r = requests.get(url)
 
-    if r.status_code == 200:
-        filename = get_zipfile(r)
-        return extract_file(filename)
-    else:
-        raise ConnectionError
+    while True:
+        r = requests.get(url)
+
+        if r.status_code == 200:
+            filename = get_zipfile(r)
+            return extract_file(filename)
+
+        elif r.status_code == 503:
+            time.sleep(10 * 60)
+
+        else:
+            raise ConnectionError
 
 
 def get_cad_url(catalog, part_number):
@@ -218,12 +256,17 @@ def get_cad_url(catalog, part_number):
     }
 
     url = get_url('DownloadCADPath', payload)
-    r = requests.get(url)
 
-    if r.status_code == 200:
-        return r.json()['filesPath'][0]['path']
-    else:
-        raise ConnectionError
+    while True:
+        r = requests.get(url)
+        if r.status_code == 200:
+            return r.json()['filesPath'][0]['path']
+
+        elif r.status_code == 503:
+            time.sleep(10 * 60)
+
+        else:
+            raise ConnectionError
 
 
 run()

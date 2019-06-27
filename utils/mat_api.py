@@ -3,7 +3,7 @@ import os
 import matlab.engine
 
 from config import data_path
-from utils import make_dir
+from utils.utils import make_dir
 
 
 class MatlabAPI:

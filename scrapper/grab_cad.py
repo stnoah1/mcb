@@ -7,11 +7,10 @@ import requests
 import wget
 from tqdm import tqdm
 
-import db
+from database import agent
 from config import grabcad_path
-from create_img import create_image
 from scrapper.base import filter_escape_char, unzip_file, move_file, convert_to_obj, get_keyword_id
-from utils import make_dir, clean_dir
+from utils.utils import make_dir, clean_dir, create_image
 
 grapcad_url = 'https://grabcad.com'
 api_url = f'{grapcad_url}/community/api/v1/models'
@@ -88,8 +87,8 @@ def filter_files(keyword, unzipped_dir, softwares):
 
 
 def insert_search_log(keyword, total, softwares):
-    return db.insert('search_log',
-                     **{
+    return agent.insert('search_log',
+                        **{
                          'keyword': keyword,
                          'etc': f"softwares : {';'.join(softwares)}",
                          'website': 'grabCAD',
@@ -113,11 +112,11 @@ def insert_grabcad_file(cadid, filepath, model_name, image, keyword_id):
         'file_size': os.path.getsize(filepath)
 
     }
-    return db.insert('cad_file', ignore=True, **payload)
+    return agent.insert('cad_file', ignore=True, **payload)
 
 
 def is_model(cadid):
-    return not db.read(f"SELECT * from cad_file WHERE source = 3 and source_id='{cadid}'").empty
+    return not agent.read(f"SELECT * from cad_file WHERE source = 3 and source_id='{cadid}'").empty
 
 
 def run(keyword, softwares=None):
