@@ -87,14 +87,14 @@ def filter_files(keyword, unzipped_dir, softwares):
     return files
 
 
-def insert_search_log(keyword, total, softwares):
+def insert_search_log(keyword, total, sws):
     return agent.insert('search_log',
                         **{
-                         'keyword': keyword,
-                         'etc': f"softwares : {';'.join(softwares)}",
-                         'website': 'grabCAD',
-                         'total': total
-                     })
+                            'keyword': keyword,
+                            'etc': f"softwares : {';'.join(sws)}",
+                            'website': 'grabCAD',
+                            'total': total
+                        })
 
 
 def insert_grabcad_file(cadid, filepath, model_name, image, keyword_id):

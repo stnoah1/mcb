@@ -1,7 +1,9 @@
 import logging
 from datetime import datetime
 from database import agent
-from scrapper import grab_cad, dw
+from scrapper.grab_cad import run as grabCAD_run
+from scrapper.dw import run as DW_run
+from scrapper.trace_parts import run as traceParts_run
 from utils.utils import make_dir
 from tools import get_keywords
 
@@ -22,11 +24,11 @@ def search(keyword, websites=None):
 
     if 'grabcad' in websites:
         logging.info('grabCAD')
-        grab_cad.run(keyword=keyword, softwares=['obj', 'stl', 'ptc-creo-parametric', 'solidworks'])
+        grabCAD_run(keyword=keyword, softwares=['obj', 'stl', 'ptc-creo-parametric', 'solidworks'])
 
     if '3dw' in websites:
         logging.debug('3DW')
-        dw.run(keyword=keyword)
+        DW_run(keyword=keyword)
 
 
 def search_keywords_db():
@@ -37,5 +39,6 @@ def search_keywords_db():
 
 
 if __name__ == "__main__":
-    for keyword in ['sleeve']:
-        search(keyword, websites=['3dw'])
+    # for keyword in ['sleeve']:
+    #     search(keyword, websites=['3dw'])
+    traceParts_run()

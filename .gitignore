@@ -191,6 +191,8 @@ scrap
 labeled
 imgdump
 obj_img
+*.obj
+*.stp
 
 .idea
 log
@@ -202,3 +204,6 @@ config.py
 *.tmp
 
 script.py
+
+.env
+.env.leave

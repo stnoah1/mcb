@@ -103,13 +103,14 @@ def gallery():
     keyword = request.args.get('keyword', '')
     img_info = get_cad_imgs(keyword, condition)
     print(f'{len(img_info)} was found!!')
-    return render_template('gallery.html', img_info=img_info[:200], keywords=get_miscellaneous(), labels=get_category())
+    return render_template('gallery.html', img_info=img_info[:500], keywords=get_miscellaneous(),
+                           labels=get_category(), num_file=str(len(img_info)))
 
 
 @app.route("/")
 def index():
-    print(get_miscellaneous())
-    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_miscellaneous(), labels=get_category())
+    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_miscellaneous(),
+                           labels=get_category(), num_file='')
 
 
 @app.route('/stats', methods=("POST", "GET"))

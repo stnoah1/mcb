@@ -4,8 +4,8 @@ import sys
 
 from tqdm import tqdm
 
-import config
-import utils
+import config, logger, utils
+from api import PythonCreoConnection
 
 flags_given = False
 if len(sys.argv) > 1:
