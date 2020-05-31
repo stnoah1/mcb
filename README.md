@@ -1,4 +1,4 @@
-# Data acquisition and annotation Tool
+# Introduction
 We introduce a web-based data acuisition and annotation tool for Mechanical Components. We collect models from online 3D CAD repositories To effectively annotate, CAD models are filtered and annotated using with this tools. We define classes by following the field ”Mechanical 290 Systems and Components” of the International Classification Standard (ICS).
 
 ![overview](overview.png)
@@ -32,6 +32,7 @@ We provide mechanical components collector for online large 3D CAD repositories:
 python scrapper.py --keyword=path/to/keyword.txt
 ```
 ## Run Web-based UI
+A dataset managing platform visualizes multi-view images of each engineering part, which gives users a more comprehensive understanding of the mechanical part during filtering and annotating.
 ```Python
 python web_server.py
 ```
