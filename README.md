@@ -1,7 +1,7 @@
 # Data acquisition and annotation Tool
 We introduce a web-based data acuisition and annotation tool for Mechanical Components. We collect models from online 3D CAD repositories To effectively annotate, CAD models are filtered and annotated using with this tools. We define classes by following the field ”Mechanical 290 Systems and Components” of the International Classification Standard (ICS).
 
-![annotation ui](/figures/annotation ui.png)
+![overview]('overview.png')
 
 ## Setup
 ### 1. Install dependencies
