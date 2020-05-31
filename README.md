@@ -32,7 +32,7 @@ We provide mechanical components collector for online large 3D CAD repositories:
 python scrapper.py --keyword=path/to/keyword.txt
 ```
 ## Run Web-based UI
-A dataset managing platform visualizes multi-view images of each engineering part, which gives users a more comprehensive understanding of the mechanical part during filtering and annotating.
+A dataset managing platform visualizes multi-view images of each engineering part, which gives users a more comprehensive understanding of the mechanical part during filtering and annotating. [DEMO page](http://68.50.194.108/taxonomy_viewer?category=70&subcategory=0)
 ```Python
 python web_server.py
 ```
