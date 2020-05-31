@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MCB Taxonomy Viewer</title>
+    <link rel="shortcut icon" href="https://mechanical-components.herokuapp.com/static/img/mcb_favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.flex-images.css') }}">
+</head>
+
+<body>
+
+<form action="/taxonomy_viewer" method="get" class="navbar">
+
+    <div style="width:20%;float:left;font-size:30px;padding:0 40px;color:white; ">Dataset Viewer</div>
+
+    <div class="custom-select" style="width:10%;" onclick="getSubCat()">
+        <select id="category" name="category" style="z-index:99">
+            <option value="" selected>Category</option>
+            {% for idx, item in labels.iterrows() %}
+            <option value="{{item['id']}}">{{item['name'].capitalize()}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="subcategory" class="custom-select" style="width:10%;">
+        <select id="subcategory-select" name="subcategory" style="z-index:99">
+            <option value="0" selected>Subcategory</option>
+        </select>
+    </div>
+
+    <input class="submit" style="width:10%" id="search" type="submit" value="SEARCH">
+
+    <div style="width:10%;float:left;color:white;margin-left: 20px;margin-top: 10px;font-size: 20px;font-family: Arial,serif;">
+        <span>{{num_file}} models</span>
+    </div>
+</form>
+
+<div class="main" id="main">
+    <div id="image" class="flex-images">
+        {% for idx, rows in img_info.iterrows() %}
+        <div class="item nopad" style="max-width:290px" id={{rows['id']}}>
+            <label class="image-checkbox">
+                <img class="img-responsive" src="/image/{{rows['id']}}" data-src="/image/{{rows['id']}}"
+                     alt="{{rows['id']}}">
+                <input type="checkbox" name="image" value={{rows['id']}}>
+                <i class="fa fa-check hidden"></i>
+                <div class="over">{{rows['name']}}
+                    <button class="view" onclick="openView('{{rows["id"]}}')">3D View</button>
+                    <span class="view"
+                          style="background-color:cornflowerblue;font-size:14px;margin-bottom:0.5px;margin-right: 2px;padding: 1px">{{rows['original_label']}}
+                    </span>
+                </div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.flex-images.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const subcategory = urlParams.get('subcategory');
+    const category = urlParams.get('category');
+
+    cat_selection = document.getElementById('category');
+    try {
+        cat_selection.selectedIndex = cad_selection.querySelector('option[value="' + category + '"]').index;
+    } catch (err) {
+        cat_selection.selectedIndex = 0;
+    }
+
+    subcate_selection = document.getElementById('subcategory-select');
+    try {
+        subcate_selection.selectedIndex = keyword_selection.querySelector('option[value="' + subcategory + '"]').index;
+    } catch (err) {
+        subcate_selection.selectedIndex = 0;
+    }
+
+    selectDropDown("custom-select");
+    document.addEventListener("click", closeAllSelect);
+
+
+    function getSubCat() {
+        var e = document.getElementById("category");
+        var category = e.options[e.selectedIndex].value;
+        $.ajax({url: "/subcategory?category=" + category, dataType:'json', success: function(result){
+            var e1 = document.getElementById("subcategory-select");
+            var e2 = document.getElementById("subcategory").getElementsByClassName("select-items")[0].getElementsByTagName("UL")[0];
+
+            e1.innerHTML = "<option value='0'>-</option>";
+            e2.innerHTML = "<li>-</li>";
+            clickEvent(e2.getElementsByTagName("LI")[0]);
+            for (i = 0; i < result.length; i++) {
+                var option_node = document.createElement("OPTION");
+                var list_node = document.createElement("LI");
+                clickEvent(list_node);
+                var textnode = document.createTextNode(result[i]['name']);
+                option_node.value = result[i]['id'];
+                option_node.innerText = result[i]['name'];
+                list_node.appendChild(textnode);
+                e1.appendChild(option_node);
+                e2.appendChild(list_node);
+            }
+        }});
+    }
+    function clickEvent(node) {
+        node.addEventListener("click", function (e) {
+            /*when an item is clicked, update the original select box,
+                    and the selected item:*/
+            var y, i, k, s, h;
+            s = this.parentNode.parentNode.parentNode.getElementsByTagName("select")[0];
+            h = this.parentNode.parentNode.previousSibling;
+            for (i = 0; i < s.length; i++) {
+                if (s.options[i].innerHTML === this.innerHTML) {
+                    s.selectedIndex = i;
+                    h.innerHTML = this.innerHTML;
+                    y = this.parentNode.parentNode.getElementsByClassName("same-as-selected");
+                    for (k = 0; k < y.length; k++) {
+                        y[k].removeAttribute("class");
+                    }
+                    this.setAttribute("class", "same-as-selected");
+                    break;
+                }
+            }
+            h.click();
+        });
+    }
+</script>
+</body>
+</html>

@@ -24,6 +24,10 @@ def get_category():
     return read(queries.select_category.format(parent=0))
 
 
+def get_dataset():
+    return read(queries.select_taxonomy)
+
+
 def get_subcategory(parent):
     return read(queries.select_category.format(parent=parent))
 
@@ -93,8 +97,8 @@ def viewer():
     return render_template(f'viewer.html')
 
 
-@app.route("/gallery", methods=["GET"])
-def gallery():
+@app.route("/annotator", methods=["GET"])
+def annotator():
     cad_type = request.args.get('cad', '')
     if cad_type == '0':
         condition = ''
@@ -107,9 +111,27 @@ def gallery():
                            labels=get_category(), num_file=str(len(img_info)))
 
 
+@app.route("/taxonomy_viewer", methods=["GET"])
+def taxnomy_viewer():
+    category = request.args.get('category', -1)
+    subcategory = request.args.get('subcategory', -1)
+    if subcategory == '0':
+        keyword = category
+    elif subcategory == -1:
+        keyword = -2
+    else:
+        keyword = subcategory
+
+
+    img_info = get_cad_imgs(keyword, '')
+
+    print(f'{len(img_info)} models found')
+    return render_template('taxonomy_viewer.html', img_info=img_info.sample(frac=1), keywords=get_miscellaneous(),
+                           labels=get_dataset(), num_file=str(len(img_info)))
+
 @app.route("/")
 def index():
-    return render_template('gallery.html', img_info=pd.DataFrame(), keywords=get_miscellaneous(),
+    return render_template('taxonomy_viewer.html', img_info=pd.DataFrame(), keywords=get_miscellaneous(),
                            labels=get_category(), num_file='')
 
 

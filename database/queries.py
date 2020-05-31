@@ -1,15 +1,20 @@
 select_keywords = '''
-    SELECT id, name 
-    FROM keyword 
-    WHERE use=true 
+    SELECT id, name
+    FROM keyword
+    WHERE use=true
     ORDER by name;
 '''
-
+select_taxonomy = '''
+    SELECT id, name
+    FROM keyword
+    WHERE use = True and parent=0
+    ORDER BY name;
+'''
 select_images = '''
-    SELECT id, 
-        name, 
+    SELECT id,
+        name,
         SPLIT_PART(file, '/', 6) as original_label
-    FROM cad_file 
+    FROM cad_file
     WHERE label = {label} and file like '%%.obj' {cad_type}
     order by original_label, file_size, name;
 '''
@@ -20,21 +25,21 @@ check_trace_part_data = '''
     where source = 4 and file like '%%{file}%%';
 '''
 select_category = '''
-    SELECT id, name 
-    FROM keyword 
+    SELECT id, name
+    FROM keyword
     WHERE use = True and parent={parent}
     ORDER BY name;
 '''
 
 update_label = '''
-    UPDATE cad_file 
-    SET label='{label}' 
+    UPDATE cad_file
+    SET label='{label}'
     WHERE id='{id}';
 '''
 
 select_object_by_id = '''
-    SELECT * 
-    FROM cad_file 
+    SELECT *
+    FROM cad_file
     WHERE id='{id}';
 '''
 
