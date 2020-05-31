@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sshtunnel import SSHTunnelForwarder
 
-from config import localhost, user, password, database
+from config import dbhost, user, password, database
 
 
 class DBConn:
@@ -11,7 +11,7 @@ class DBConn:
 
     def __enter__(self):
         self.engine = create_engine(
-            f'postgresql://{user}:{password}@{localhost}:{self.port}/{database}')
+            f'postgresql://{user}:{password}@{dbhost}:{self.port}/{database}')
         return self
 
     def read(self, q):
