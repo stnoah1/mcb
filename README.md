@@ -28,6 +28,10 @@ password = 'password'
 
 # ASSIMP path
 assimp_path = 'PATH/TO/ASSIMP'
+
+# TraceParts
+api_key = ''
+login_id = ''
 ```
 
 ### 3. Create Database
