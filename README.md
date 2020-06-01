@@ -31,7 +31,7 @@ assimp_path = 'PATH/TO/ASSIMP'
 ```
 
 ### 3. Create Database
-3.1 Create `keyword` table
+3.1 Create `keyword` table.
 ```SQL
 create table keyword
 (
