@@ -1,4 +1,4 @@
-# Introduction
+## Introduction
 We introduce a web-based data acuisition and annotation tool for Mechanical Components. We collect models from online 3D CAD repositories To effectively annotate, CAD models are filtered and annotated using with this tools. We define classes by following the field ”Mechanical 290 Systems and Components” of the International Classification Standard (ICS).
 
 ![overview](overview.png)
@@ -29,7 +29,6 @@ password = 'password'
 # ASSIMP path
 assimp_path = 'PATH/TO/ASSIMP'
 ```
-
 
 ### 3. Create Database
 3.1 Create `keyword` table
