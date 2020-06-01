@@ -4,10 +4,13 @@ We introduce a web-based data acuisition and annotation tool for Mechanical Comp
 ![overview](overview.png)
 
 ## Setup
-### 1. Install dependencies
+### 1. Install
+1.1 Install Python dependencies
 ```Bash
 pip install -r requirements.txt
 ```
+1.2 Install [ASSIMP](https://github.com/assimp/assimp) for file format conversion.
+
 ### 2. Make `config.py`
 Create `config.py` following format,
 ```Python
@@ -24,6 +27,10 @@ user = ''
 password = ''
 password = ''
 ```
+
+# ASSIMP path
+assimp_path = 'PATH/TO/ASSIMP'
+
 ### 3. Create Database
 
 ## Usage
