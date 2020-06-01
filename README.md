@@ -37,7 +37,7 @@ assimp_path = 'PATH/TO/ASSIMP'
 ### Run Data collector
 We provide mechanical components collector for online large 3D CAD repositories: [TraceParts](https://www.traceparts.com/), [3D WareHouse](https://3dwarehouse.sketchup.com/), and [GrabCAD](https://grabcad.com/). 3D Warehouse and GrabCAD are large online open repository for professional designers, engineers, manufacturers, and students to share CAD models. They provide numerous CAD models with various classes, including mechanical components.
 ```Python
-python scrapper.py --keyword=path/to/keywords.txt
+python scrapper.py --keywords=path/to/keywords.txt
 ```
 ### Run Web-based UI
 A dataset managing platform visualizes multi-view images of each engineering part, which gives users a more comprehensive understanding of the mechanical part during filtering and annotating. [[DEMO](http://68.50.194.108/taxonomy_viewer?category=70&subcategory=0)]

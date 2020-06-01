@@ -1,4 +1,6 @@
 import logging
+import argparse
+
 from datetime import datetime
 from database import agent
 from scrapper.grab_cad import run as grabCAD_run
@@ -9,6 +11,10 @@ from tools import get_keywords
 
 make_dir('log')
 logging.basicConfig(filename=f'log/{datetime.now().strftime("%y%m%d_%H%M%S")}.log', level=logging.ERROR)
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('-k', '--keywords', default=None, type=str)
+args = parser.parse_args()
 
 
 def search(keyword, websites=None):
@@ -31,6 +37,13 @@ def search(keyword, websites=None):
         DW_run(keyword=keyword)
 
 
+def read_keyword(keywords_file):
+    with open(keywords_file) as f:
+        keywords = f.read().split('\n')
+
+    return keywords
+
+
 def search_keywords_db():
     keywords = get_keywords()
 
@@ -39,6 +52,7 @@ def search_keywords_db():
 
 
 if __name__ == "__main__":
-    # for keyword in ['sleeve']:
-    #     search(keyword, websites=['3dw'])
+    keywords = read_keyword(args.keywords)
+    for keyword in keywords:
+        search(keyword, websites=['3dw', 'grabcad'])
     traceParts_run()
