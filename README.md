@@ -26,10 +26,11 @@ dbhost = ''
 user = ''
 password = ''
 password = ''
-```
 
 # ASSIMP path
 assimp_path = 'PATH/TO/ASSIMP'
+```
+
 
 ### 3. Create Database
 
