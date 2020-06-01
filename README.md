@@ -5,11 +5,11 @@ We introduce a web-based data acuisition and annotation tool for Mechanical Comp
 
 ## Setup
 ### 1. Install
-1.1 Install Python dependencies
+* Install Python dependencies
 ```Bash
 pip install -r requirements.txt
 ```
-1.2 Install [ASSIMP](https://github.com/assimp/assimp) for file format conversion.
+* Install [ASSIMP](https://github.com/assimp/assimp) for file format conversion.
 
 ### 2. Make `config.py`
 Create `config.py` following format,
@@ -31,7 +31,7 @@ assimp_path = 'PATH/TO/ASSIMP'
 ```
 
 ### 3. Create Database
-3.1 Create `keyword` table.
+* Create `keyword` table.
 ```SQL
 create table keyword
 (
@@ -49,7 +49,7 @@ create table keyword
 create unique index keyword_id_uindex
     on keyword (id);
 ```
-3.2 Create `cad_file` table.
+* Create `cad_file` table.
 ```SQL
 create table cad_file
 (
@@ -74,12 +74,12 @@ create unique index cad_file_id_uindex
     on cad_file (id);
 ```
 ## Usage
-### Run Data collector
+### 1. Run Data collector
 We provide mechanical components collector for online large 3D CAD repositories: [TraceParts](https://www.traceparts.com/), [3D WareHouse](https://3dwarehouse.sketchup.com/), and [GrabCAD](https://grabcad.com/). 3D Warehouse and GrabCAD are large online open repository for professional designers, engineers, manufacturers, and students to share CAD models. They provide numerous CAD models with various classes, including mechanical components.
 ```Python
 python scrapper.py --keywords=path/to/keywords.txt
 ```
-### Run Web-based UI
+### 2. Run Web-based UI
 A dataset managing platform visualizes multi-view images of each engineering part, which gives users a more comprehensive understanding of the mechanical part during filtering and annotating. [[DEMO](http://68.50.194.108/taxonomy_viewer?category=70&subcategory=0)]
 ```Python
 python web_server.py
