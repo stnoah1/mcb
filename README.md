@@ -49,7 +49,7 @@ create table keyword
 create unique index keyword_id_uindex
     on keyword (id);
 ```
-3.2 Create `cad_file` table
+3.2 Create `cad_file` table.
 ```SQL
 create table cad_file
 (
