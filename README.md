@@ -79,7 +79,8 @@ create unique index cad_file_id_uindex
 ```
 ## Usage
 ### 1. Run Data collector
-We provide mechanical components collector for online large 3D CAD repositories: [TraceParts](https://www.traceparts.com/), [3D WareHouse](https://3dwarehouse.sketchup.com/), and [GrabCAD](https://grabcad.com/). 3D Warehouse and GrabCAD are large online open repository for professional designers, engineers, manufacturers, and students to share CAD models. They provide numerous CAD models with various classes, including mechanical components.
+We provide mechanical components collector for online large 3D CAD repositories: [TraceParts](https://www.traceparts.com/), [3D WareHouse](https://3dwarehouse.sketchup.com/), and [GrabCAD](https://grabcad.com/). 3D Warehouse and GrabCAD are large online open repository for professional designers, engineers, manufacturers, and students to share CAD models. They provide numerous CAD models with various classes, including mechanical components.  If you want to collect data from TraceParts, you have to request API key through their website [[link](https://info.traceparts.com/developers/request-api-key/)] and put the `api_key` and `login_id` in the `config.py` file.
+
 ```Python
 python scrapper.py --keywords=path/to/keywords.txt
 ```
