@@ -91,3 +91,10 @@ python web_server.py
 ```
 
 ## Citation
+```Tex
+ @inproceedings{sangpil2020large,
+    title={A Large-scale Annotated Mechanical Components Benchmark for Classification and Retrieval Tasks with Deep Neural Networks},
+    author={Kim, Sangpil and Chi, Hyung-gun and Hu, Xiao and Huang, Qixing and Ramani, Karthik},
+    booktitle={Proceedings of 16th European Conference on Computer Vision (ECCV)},
+    year={2020},}
+```
